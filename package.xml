@@ -2,13 +2,14 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>bebop_simulator_r2</name>
-  <version>0.0.0</version>
-  <description>TODO: Package description</description>
-  <maintainer email="artem.egorov@enterar.com">root</maintainer>
+  <version>0.0.1</version>
+  <description>This package aims to simulate the behavior of the Parrot Bebop by using SIL methodologies.</description>
+  <maintainer email="mr.artem.egorov@eyandex.ru">root</maintainer>
   <license>Apache-2.0</license>
-
+  <author>Artem Egorov</author>
   <buildtool_depend>ament_cmake</buildtool_depend>
-
+  <url type="website">https://github.com/Artii24/BebopS</url>
+  <!-- Dependencies needed to compile this package. -->
   <depend>rclcpp</depend>
   <depend>geometry_msgs</depend>
   <depend>gazebo_msgs</depend>
@@ -16,8 +17,7 @@
   <depend>nav_msgs</depend>
   <depend>std_msgs</depend>
   <depend>sensor_msgs</depend>
-  <depend>cmake_modules</depend>
-
+<!-- Dependencies needed to test this package. -->
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
 
