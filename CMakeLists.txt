@@ -16,11 +16,41 @@ find_package(std_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(cmake_modules REQUIRED)
 
-add_executable(position_controller_node src/position_controller_node.cpp)
+find_package(
+  Eigen REQUIRED
+)
+
+# add libraries
+add_library(position_controller
+   src/library/position_controller.cpp
+)
+
+add_library(position_controller_with_bebop
+   src/library/position_controller_with_bebop.cpp
+)
+
+add_library(extendedKalmanFilter
+   src/library/extendedKalmanFilter.cpp
+)
+
+add_library(waypoint_filter
+   src/library/waypoint_filter.cpp
+)
+
+# The ament_export_targets macro exports the targets for CMake. 
+# This is necessary to allow your library’s clients to use the target_link_libraries(client my_library::my_library) syntax. 
+ament_export_targets(position_controller HAS_LIBRARY_TARGET)
+
+# Add exe, nodes
+add_executable(position_controller_node src/nodes/position_controller_node.cpp)
+# This adds all files in the folder ${CMAKE_CURRENT_SOURCE_DIR}/include to the public interface during build time and all files
+#  in the include folder (relative to ${CMAKE_INSTALL_DIR}) when being installed.
 target_include_directories(position_controller_node PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
+
 target_compile_features(position_controller_node PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
+
 ament_target_dependencies(
   position_controller_node
   "rclcpp"
@@ -36,16 +66,26 @@ ament_target_dependencies(
 install(TARGETS position_controller_node
   DESTINATION lib/${PROJECT_NAME})
 
-if(BUILD_TESTING)
-  find_package(ament_lint_auto REQUIRED)
-  # the following line skips the linter which checks for copyrights
-  # comment the line when a copyright and license is added to all source files
-  set(ament_cmake_copyright_FOUND TRUE)
-  # the following line skips cpplint (only works in a git repo)
-  # comment the line when this package is in a git repo and when
-  # a copyright and license is added to all source files
-  set(ament_cmake_cpplint_FOUND TRUE)
-  ament_lint_auto_find_test_dependencies()
-endif()
+install(
+  DIRECTORY include/${PROJECT_NAME}/
+  DIRECTORY include/bebop_simulator_msgs/
+  DIRECTORY include/bebop_msgs/
+  DESTINATION include
+  FILES_MATCHING PATTERN "*.h")
 
+
+ament_export_dependencies(rclcpp
+geometry_msgs
+  gazebo_msgs
+  mav_msgs
+  nav_msgs
+  std_msgs
+  roscpp
+  sensor_msgs
+  cmake_modules
+  Eigen
+  )
+ament_export_libraries(
+  
+)
 ament_package()
