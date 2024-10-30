@@ -4,7 +4,6 @@ project(bebop_simulator_r2)
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
-
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
@@ -14,10 +13,10 @@ find_package(mav_msgs REQUIRED)
 find_package(nav_msgs REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
-find_package(cmake_modules REQUIRED)
+# find_package(cmake_modules REQUIRED)
 
 find_package(
-  Eigen REQUIRED
+  Eigen3 REQUIRED
 )
 
 # add libraries
@@ -39,7 +38,8 @@ add_library(waypoint_filter
 
 # The ament_export_targets macro exports the targets for CMake. 
 # This is necessary to allow your library’s clients to use the target_link_libraries(client my_library::my_library) syntax. 
-ament_export_targets(position_controller HAS_LIBRARY_TARGET)
+# ament_export_include_directories("include/${PROJECT_NAME}")
+# ament_export_targets(position_controller HAS_LIBRARY_TARGET)
 
 # Add exe, nodes
 add_executable(position_controller_node src/nodes/position_controller_node.cpp)
@@ -60,7 +60,7 @@ ament_target_dependencies(
   "nav_msgs"
   "std_msgs"
   "sensor_msgs"
-  "cmake_modules"
+  # "cmake_modules"
 )
 
 install(TARGETS position_controller_node
@@ -82,7 +82,7 @@ geometry_msgs
   std_msgs
   roscpp
   sensor_msgs
-  cmake_modules
+  # cmake_modules
   Eigen
   )
 ament_export_libraries(
