@@ -20,26 +20,74 @@ find_package(
 )
 
 # add libraries
-add_library(position_controller
+add_library(position_controller SHARED
    src/library/position_controller.cpp
 )
 
-add_library(position_controller_with_bebop
+add_library(position_controller_with_bebop SHARED
    src/library/position_controller_with_bebop.cpp
 )
 
-add_library(extendedKalmanFilter
+add_library(extendedKalmanFilter SHARED
    src/library/extendedKalmanFilter.cpp
 )
 
-add_library(waypoint_filter
+add_library(waypoint_filter SHARED
    src/library/waypoint_filter.cpp
 )
-
+target_include_directories(position_controller PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>)
+target_include_directories(position_controller_with_bebop PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>)
+target_include_directories(extendedKalmanFilter PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>)
+target_include_directories(waypoint_filter PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>)
 # The ament_export_targets macro exports the targets for CMake. 
 # This is necessary to allow your library’s clients to use the target_link_libraries(client my_library::my_library) syntax. 
 # ament_export_include_directories("include/${PROJECT_NAME}")
-# ament_export_targets(position_controller HAS_LIBRARY_TARGET)
+
+
+
+
+ament_export_targets(export_position_controller HAS_LIBRARY_TARGET)
+ament_export_targets(export_position_controller_with_bebop HAS_LIBRARY_TARGET)
+ament_export_targets(export_extendedKalmanFilter HAS_LIBRARY_TARGET)
+ament_export_targets(export_waypoint_filter HAS_LIBRARY_TARGET)
+
+target_link_libraries(position_controller ${${LIBS}})
+target_link_libraries(position_controller_with_bebop ${${LIBS}})
+target_link_libraries(extendedKalmanFilter ${${LIBS}})
+target_link_libraries(waypoint_filter ${${LIBS}})
+
+install(
+  DIRECTORY include/${PROJECT_NAME}/bebop_simulator
+  DIRECTORY include/${PROJECT_NAME}/bebop_simulator_msgs/
+  DIRECTORY include/${PROJECT_NAME}/bebop_msgs/
+  DESTINATION include
+  FILES_MATCHING PATTERN "*.h")
+
+install(
+  TARGETS 
+  position_controller 
+  position_controller_with_bebop 
+  extendedKalmanFilter 
+  waypoint_filter
+  EXPORT 
+  export_position_controller 
+  export_position_controller_with_bebop 
+  export_extendedKalmanFilter 
+  export_waypoint_filter
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib
+  RUNTIME DESTINATION bin
+  INCLUDES DESTINATION include
+
+  )
 
 # Add exe, nodes
 add_executable(position_controller_node src/nodes/position_controller_node.cpp)
@@ -48,30 +96,24 @@ add_executable(position_controller_node src/nodes/position_controller_node.cpp)
 target_include_directories(position_controller_node PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
-
 target_compile_features(position_controller_node PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
-
-ament_target_dependencies(
-  position_controller_node
-  "rclcpp"
-  "geometry_msgs"
-  "gazebo_msgs"
-  "mav_msgs"
-  "nav_msgs"
-  "std_msgs"
-  "sensor_msgs"
-  # "cmake_modules"
-)
+target_link_libraries(position_controller_node position_controller position_controller_with_bebop extendedKalmanFilter waypoint_filter ${${LIBS}})
+  ament_target_dependencies(
+    position_controller_node
+    "rclcpp"
+    "geometry_msgs"
+    "gazebo_msgs"
+    "mav_msgs"
+    "nav_msgs"
+    "std_msgs"
+    "sensor_msgs"
+    # "cmake_modules"
+  )
 
 install(TARGETS position_controller_node
   DESTINATION lib/${PROJECT_NAME})
 
-install(
-  DIRECTORY include/${PROJECT_NAME}/
-  DIRECTORY include/bebop_simulator_msgs/
-  DIRECTORY include/bebop_msgs/
-  DESTINATION include
-  FILES_MATCHING PATTERN "*.h")
+
 
 
 ament_export_dependencies(rclcpp

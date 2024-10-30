@@ -17,7 +17,7 @@
  */
 
 #include "rclcpp/rclcpp.hpp"
-#include <mav_msgs/default_topics.h>
+#include <mav_msgs/default_topics.hpp>
 #include <ros/console.h> 
 
 #include "position_controller_node.h"
