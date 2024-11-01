@@ -18,7 +18,7 @@
 
 #include "rclcpp/rclcpp.hpp"
 #include <mav_msgs/default_topics.h>
-#include <ros/console.h> 
+#include <rclcpp/logging.hpp> 
 
 #include <std_msgs/Empty.h>
 

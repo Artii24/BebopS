@@ -35,7 +35,7 @@
 #include <inttypes.h>
 
 #include <nav_msgs/msg/Odometry.h>
-#include <ros/console.h>
+#include <rclcpp/logging.hpp>
 
 
 #define M_PI                      3.14159265358979323846  /* pi */
@@ -152,7 +152,7 @@ PositionController::PositionController()
 PositionController::~PositionController() {}
 
 //The callback saves data come from simulation into csv files
-void PositionController::CallbackSaveData(const ros::TimerEvent& event){
+void PositionController::CallbackSaveData(const rclcpp::TimerEvent& event){
 
       if(!dataStoring_active_){
          return;
@@ -955,7 +955,7 @@ void PositionController::AttitudeController(double* u_phi, double* u_theta, doub
 
 
 //The function every TsA computes the attitude and angular velocity errors. When the data storing is active, the data are saved into csv files
-void PositionController::CallbackAttitude(const ros::TimerEvent& event){
+void PositionController::CallbackAttitude(const rclcpp::TimerEvent& event){
      
      AttitudeErrors(&e_phi_, &e_theta_, &e_psi_);
      AngularVelocityErrors(&dot_e_phi_, &dot_e_theta_, &dot_e_psi_);
@@ -968,10 +968,10 @@ void PositionController::CallbackAttitude(const ros::TimerEvent& event){
         tempTimeAttitudeErrors << my_messageAttitude_.response.sim_time << "\n";
         listTimeAttitudeErrors_.push_back(tempTimeAttitudeErrors.str());
 
-        ros::WallTime beginWall = ros::WallTime::now();
+        rclcpp::WallTime beginWall = rclcpp::WallTime::now();
         double wallSecs = beginWall.toSec() - wallSecsOffset_;
 
-        ros::Time begin = ros::Time::now();
+        builtin_interfaces::msg::Time begin = builtin_interfaces::msg::Time::now();
         double secs = begin.toSec();
 
         //Saving attitude derivate errors in a file
@@ -1004,7 +1004,7 @@ void PositionController::CallbackAttitude(const ros::TimerEvent& event){
 //  * the EKF is used to estimate the drone attitude and linear velocity
 //  * the position and velocity errors are computed
 //  * the last part is used to store the data into csv files if the data storing is active
-void PositionController::CallbackPosition(const ros::TimerEvent& event){
+void PositionController::CallbackPosition(const rclcpp::TimerEvent& event){
   
      // The function is used to invoke the waypoint filter employs to reduce the error dimension along the axes when the drone stars to follow the trajectory.
      // The waypoint filter works with an update time of Tsp
@@ -1028,10 +1028,10 @@ void PositionController::CallbackPosition(const ros::TimerEvent& event){
         tempTimePositionErrors << my_messagePosition_.response.sim_time << "\n";
         listTimePositionErrors_.push_back(tempTimePositionErrors.str());
 
-        ros::WallTime beginWall = ros::WallTime::now();
+        rclcpp::WallTime beginWall = rclcpp::WallTime::now();
         double wallSecs = beginWall.toSec() - wallSecsOffset_;
 
-        ros::Time begin = ros::Time::now();
+        builtin_interfaces::msg::Time begin = builtin_interfaces::msg::Time::now();
         double secs = begin.toSec();
 
         //Saving velocity errors in a file

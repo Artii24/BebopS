@@ -33,15 +33,15 @@
 #define TF_TRANSFORM_DATATYPES_H
 
 #include <string>
-#include "geometry_msgs/PointStamped.h"
-#include "geometry_msgs/Vector3Stamped.h"
-#include "geometry_msgs/QuaternionStamped.h"
-#include "geometry_msgs/TransformStamped.h"
-#include "geometry_msgs/PoseStamped.h"
-#include "tf/LinearMath/Transform.h"
-#include "ros/time.h"
+#include "geometry_msgs/msg/point_stamped.hpp"
+#include "geometry_msgs/msg/vector3_stamped.hpp"
+#include "geometry_msgs/msg/quaternion_stamped.hpp"
+#include "geometry_msgs/msg/transform_stamped.hpp"
+#include "geometry_msgs/msg/pose_stamped.hpp"
+#include "tf2/LinearMath/Transform.h"
+#include "builtin_interfaces/msg/time.hpp"
 
-#include "ros/console.h"
+#include "rclcpp/logging.hpp"
 
 namespace tf
 {
@@ -56,14 +56,14 @@ static const double QUATERNION_TOLERANCE = 0.1f;
 template <typename T>
 class Stamped : public T{
  public:
-  ros::Time stamp_; ///< The timestamp associated with this data
+  builtin_interfaces::msg::Time stamp_; ///< The timestamp associated with this data
   std::string frame_id_; ///< The frame_id associated this data
 
   /** Default constructor */
   Stamped() :frame_id_ ("NO_ID_STAMPED_DEFAULT_CONSTRUCTION"){}; //Default constructor used only for preallocation
 
   /** Full constructor */
-  Stamped(const T& input, const ros::Time& timestamp, const std::string & frame_id) :
+  Stamped(const T& input, const builtin_interfaces::msg::Time& timestamp, const std::string & frame_id) :
     T (input), stamp_ ( timestamp ), frame_id_ (frame_id){ } ;
   
   /** Set the data element */
@@ -81,10 +81,10 @@ bool operator==(const Stamped<T> &a, const Stamped<T> &b) {
 class StampedTransform : public tf::Transform
 {
 public:
-  ros::Time stamp_; ///< The timestamp associated with this transform
+  builtin_interfaces::msg::Time stamp_; ///< The timestamp associated with this transform
   std::string frame_id_; ///< The frame_id of the coordinate frame  in which this transform is defined
   std::string child_frame_id_; ///< The frame_id of the coordinate frame this transform defines
-  StampedTransform(const tf::Transform& input, const ros::Time& timestamp, const std::string & frame_id, const std::string & child_frame_id):
+  StampedTransform(const tf::Transform& input, const builtin_interfaces::msg::Time& timestamp, const std::string & frame_id, const std::string & child_frame_id):
     tf::Transform (input), stamp_ ( timestamp ), frame_id_ (frame_id), child_frame_id_(child_frame_id){ };
 
   /** \brief Default constructor only to be used for preallocation */

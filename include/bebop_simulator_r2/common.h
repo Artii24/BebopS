@@ -23,9 +23,9 @@
 
 #include <assert.h>
 
-#include <mav_msgs/conversions.h>
-#include <mav_msgs/default_topics.h>
-#include <nav_msgs/msg/Odometry.h>
+#include <mav_msgs/conversions.hpp>
+#include <mav_msgs/msg/default_topics.hpp>
+#include <nav_msgs/msg/msg/Odometry.hpp>
 
 
 namespace bebop_simulator {

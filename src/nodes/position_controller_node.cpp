@@ -18,11 +18,11 @@
 
 #include "rclcpp/rclcpp.hpp"
 #include <mav_msgs/default_topics.hpp>
-#include <ros/console.h> 
+#include <rclcpp/logging.hpp> 
 
 #include "position_controller_node.h"
 
-#include "bebop_simulator/parameters_ros.h"
+#include "bebop_simulator_r2/parameters_ros.h"
 #include "bebop_simulator_msgs/default_topics.h"
 
 namespace bebop_simulator {

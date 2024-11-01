@@ -23,8 +23,8 @@
 
 #include <string>
 
-#include <ros/time.h>
-#include <std_msgs/Empty.h>
+#include "builtin_interfaces/msg/time.hpp"
+#include <std_msgs/msg/Empty.hpp>
 
 #include "extendedKalmanFilter.h"
 #include "stabilizer_types.h"
@@ -160,14 +160,14 @@ class PositionControllerParameters {
             ros::NodeHandle n2_;
             ros::NodeHandle n3_;
             ros::NodeHandle n4_;
-            ros::Timer timer1_;
-            ros::Timer timer2_;
-            ros::Timer timer3_;
+            rclcpp::Timer timer1_;
+            rclcpp::Timer timer2_;
+            rclcpp::Timer timer3_;
 
             //Callback functions to compute the errors among axis and angles
-            void CallbackAttitude(const ros::TimerEvent& event);
-            void CallbackPosition(const ros::TimerEvent& event);
-            void CallbackLand(const ros::TimerEvent& event);
+            void CallbackAttitude(const rclcpp::TimerEvent& event);
+            void CallbackPosition(const rclcpp::TimerEvent& event);
+            void CallbackLand(const rclcpp::TimerEvent& event);
 
             nav_msgs::Odometry odometry_filtered_private_;
 

@@ -115,7 +115,7 @@ int main(int argc, char** argv){
   for (size_t i = 0; i < waypoints.size(); ++i) {
 
         trajectory_msgs::MultiDOFJointTrajectory trajectory_msg;
-        trajectory_msg.header.stamp = ros::Time::now();
+        trajectory_msg.header.stamp = builtin_interfaces::msg::Time::now();
         Eigen::Vector3d desired_position(waypoints[i].position.x(), waypoints[i].position.y(), waypoints[i].position.z());
         double desired_yaw = waypoints[i].yaw;
         mav_msgs::msgMultiDofJointTrajectoryFromPositionYaw(desired_position, desired_yaw, &trajectory_msg);

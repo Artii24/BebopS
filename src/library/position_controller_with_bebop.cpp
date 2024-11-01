@@ -37,7 +37,7 @@
 #include <inttypes.h>
 
 #include <nav_msgs/msg/Odometry.h>
-#include <ros/console.h>
+#include <rclcpp/logging.hpp>
 #include <std_msgs/Empty.h>
 
 
@@ -434,14 +434,14 @@ void PositionControllerWithBebop::AttitudeErrors(double* e_phi, double* e_theta,
 
 }
 
-void PositionControllerWithBebop::CallbackAttitude(const ros::TimerEvent& event){
+void PositionControllerWithBebop::CallbackAttitude(const rclcpp::TimerEvent& event){
      
      AttitudeErrors(&e_phi_, &e_theta_, &e_psi_);
      AngularVelocityErrors(&dot_e_phi_, &dot_e_theta_, &dot_e_psi_);
      
 }
 
-void PositionControllerWithBebop::CallbackPosition(const ros::TimerEvent& event){
+void PositionControllerWithBebop::CallbackPosition(const rclcpp::TimerEvent& event){
 
      waypoint_filter_.TrajectoryGeneration();
      SetTrajectoryPoint();
@@ -455,7 +455,7 @@ void PositionControllerWithBebop::CallbackPosition(const ros::TimerEvent& event)
  
 }
 
-void PositionControllerWithBebop::CallbackLand(const ros::TimerEvent& event){
+void PositionControllerWithBebop::CallbackLand(const rclcpp::TimerEvent& event){
 
      LandEmergency();
    

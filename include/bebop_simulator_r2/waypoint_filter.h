@@ -19,11 +19,11 @@
 #ifndef WAYPOINT_FILTER_H
 #define WAYPOINT_FILTER_H
 
-#include <ros/time.h>
+#include "builtin_interfaces/msg/time.hpp"
 
-#include <trajectory_msgs/MultiDOFJointTrajectory.h>
-#include <mav_msgs/eigen_mav_msgs.h>
-#include <nav_msgs/msg/Odometry.h>
+#include <trajectory_msgs/msg/MultiDOFJointTrajectory.hpp>
+#include <mav_msgs/msg/eigen_mav_msgs.hpp>
+#include <nav_msgs/msg/Odometry.hpp>
 #include "rclcpp/rclcpp.hpp"
 #include "stabilizer_types.h"
 

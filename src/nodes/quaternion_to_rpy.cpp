@@ -22,7 +22,7 @@
 
 #include <math.h> 
 #include "rclcpp/rclcpp.hpp"
-#include <ros/console.h> 
+#include <rclcpp/logging.hpp> 
 #include <Eigen/Eigen>
 #include <stdio.h>
 #include <boost/bind.hpp>

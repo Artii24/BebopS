@@ -19,12 +19,12 @@
 #ifndef BEBOP_CONTROL_POSITION_CONTROLLER_H
 #define BEBOP_CONTROL_POSITION_CONTROLLER_H
 
-#include <mav_msgs/conversions.h>
-#include <mav_msgs/eigen_mav_msgs.h>
+#include <mav_msgs/conversions.hpp>
+#include <mav_msgs/msg/eigen_mav_msgs.hpp>
 
 #include <string>
 
-#include <ros/time.h>
+#include "builtin_interfaces/msg/time.hpp"
 
 #include "extendedKalmanFilter.h"
 #include "waypoint_filter.h"
@@ -34,7 +34,7 @@
 #include "parameters.h"
 #include "common.h"
 
-#include <gazebo_msgs/GetWorldProperties.h>
+#include <gazebo_msgs/msg/GetWorldProperties.hpp>
 
 using namespace std;
 
@@ -200,17 +200,17 @@ class PositionControllerParameters {
             double l_, bm_;
             double Ix_, Iy_, Iz_;
             
-            ros::NodeHandle n1_;
-            ros::NodeHandle n2_;
-            ros::NodeHandle n3_;
-            ros::Timer timer1_;
-            ros::Timer timer2_;
-            ros::Timer timer3_;
+            rclcpp::NodeHandle n1_;
+            rclcpp::NodeHandle n2_;
+            rclcpp::NodeHandle n3_;
+            rclcpp::Timer timer1_;
+            rclcpp::Timer timer2_;
+            rrclcpp::Timer timer3_;
 
             //Callback functions to compute the errors among axis and angles
-            void CallbackAttitude(const ros::TimerEvent& event);
-            void CallbackPosition(const ros::TimerEvent& event);
-            void CallbackSaveData(const ros::TimerEvent& event);
+            void CallbackAttitude(const rclcpp::TimerEvent& event);
+            void CallbackPosition(const rclcpp::TimerEvent& event);
+            void CallbackSaveData(const rclcpp::TimerEvent& event);
 
             nav_msgs::Odometry odometry_filtered_private_;
 

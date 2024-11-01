@@ -29,7 +29,7 @@
 
 #include <nav_msgs/msg/Odometry.h>
 #include <mav_msgs/conversions.h>
-#include <ros/console.h>
+#include <rclcpp/logging.hpp>
 
 #include <random>
 

@@ -23,19 +23,19 @@
 #include <Eigen/Eigen>
 #include <stdio.h>
 
-#include <geometry_msgs/PoseStamped.h>
-#include <mav_msgs/Actuators.h>
-#include <mav_msgs/AttitudeThrust.h>
-#include <mav_msgs/eigen_mav_msgs.h>
-#include <nav_msgs/msg/Odometry.h>
+#include <geometry_msgs/msg/PoseStamped.hpp>
+#include <mav_msgs/msg/Actuators.hpp>
+#include <mav_msgs/msg/AttitudeThrust.hpp>
+#include <mav_msgs/msg/eigen_mav_msgs.hpp>
+#include <nav_msgs/msg/Odometry.hpp>
 #include <ros/callback_queue.h>
 #include "rclcpp/rclcpp.hpp"
-#include <trajectory_msgs/MultiDOFJointTrajectory.h>
+#include <trajectory_msgs/msg/MultiDOFJointTrajectory.hpp>
 
-#include "bebop_simulator/common.h"
-#include "bebop_simulator/position_controller.h"
-#include "bebop_simulator/parameters_ros.h"
-#include "bebop_simulator/parameters.h"
+#include "bebop_simulator_r2/common.h"
+#include "bebop_simulator_r2/position_controller.h"
+#include "bebop_simulator_r2/parameters_ros.h"
+#include "bebop_simulator_r2/parameters.h"
 
 namespace bebop_simulator {
 
