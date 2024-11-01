@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-#include "bebop_simulator/waypoint_filter.h"
+#include "bebop_simulator_r2/waypoint_filter.h"
 
 #include <Eigen/Eigen>
 #include <chrono>

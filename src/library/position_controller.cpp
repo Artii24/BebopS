@@ -16,11 +16,11 @@
  * limitations under the License.
  */
 
-#include "bebop_simulator/position_controller.h"
-#include "bebop_simulator/transform_datatypes.h"
-#include "bebop_simulator/Matrix3x3.h"
-#include "bebop_simulator/Quaternion.h" 
-#include "bebop_simulator/stabilizer_types.h"
+#include "bebop_simulator_r2/position_controller.h"
+#include "bebop_simulator_r2/transform_datatypes.h"
+#include "bebop_simulator_r2/Matrix3x3.h"
+#include "bebop_simulator_r2/Quaternion.h" 
+#include "bebop_simulator_r2/stabilizer_types.h"
 
 #include <math.h> 
 #include <time.h>
