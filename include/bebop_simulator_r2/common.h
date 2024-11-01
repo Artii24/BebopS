@@ -24,8 +24,8 @@
 #include <assert.h>
 
 #include <mav_msgs/conversions.hpp>
-#include <mav_msgs/msg/default_topics.hpp>
-#include <nav_msgs/msg/msg/Odometry.hpp>
+#include <mav_msgs/default_topics.hpp>
+#include <nav_msgs/msg/odometry.hpp>
 
 
 namespace bebop_simulator {
@@ -77,7 +77,7 @@ struct EigenOdometry {
   Eigen::Vector3d angular_velocity;
 };
 
-inline void eigenOdometryFromMsg(const nav_msgs::OdometryConstPtr& msg,
+inline void eigenOdometryFromMsg(const nav_msgs::msg::Odometry::ConstPtr& msg,
                                  EigenOdometry* odometry) {
   odometry->timeStampSec = msg->header.stamp.sec;
   odometry->timeStampNsec = msg->header.stamp.nsec;

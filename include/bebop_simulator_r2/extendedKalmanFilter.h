@@ -26,7 +26,7 @@
 #include <nav_msgs/msg/odometry.hpp>
 #include <mav_msgs/conversions.hpp>
 #include <Eigen/Eigen>
-#include <mav_msgs/msg/eigen_mav_msgs.hpp>
+#include <mav_msgs/eigen_mav_msgs.hpp>
 
 #include <random>
 #include <cmath>

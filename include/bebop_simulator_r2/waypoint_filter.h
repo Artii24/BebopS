@@ -21,9 +21,9 @@
 
 #include "builtin_interfaces/msg/time.hpp"
 
-#include <trajectory_msgs/msg/MultiDOFJointTrajectory.hpp>
-#include <mav_msgs/msg/eigen_mav_msgs.hpp>
-#include <nav_msgs/msg/Odometry.hpp>
+#include <trajectory_msgs/msg/multi_dof_joint_trajectory.hpp>
+#include <mav_msgs/eigen_mav_msgs.hpp>
+#include <nav_msgs/msg/odometry.hpp>
 #include "rclcpp/rclcpp.hpp"
 #include "stabilizer_types.h"
 

@@ -27,8 +27,8 @@
 #include "rclcpp/rclcpp.hpp"
 #include <chrono>
 
-#include <nav_msgs/msg/Odometry.h>
-#include <mav_msgs/conversions.h>
+#include <nav_msgs/msg/odometry.hpp>
+#include <mav_msgs/conversions.hpp>
 #include <rclcpp/logging.hpp>
 
 #include <random>

@@ -26,8 +26,8 @@
 #include <geometry_msgs/msg/PoseStamped.hpp>
 #include <geometry_msgs/msg/Twist.hpp>
 #include <ros/callback_queue.h>
-#include <mav_msgs/msg/eigen_mav_msgs.hpp>
-#include <nav_msgs/msg/Odometry.hpp>
+#include <mav_msgs/eigen_mav_msgs.hpp>
+#include <nav_msgs/msg/odometry.hpp>
 #include "rclcpp/rclcpp.hpp"
 #include <trajectory_msgs/msg/MultiDOFJointTrajectory.hpp>
 

@@ -32,7 +32,7 @@
 #include <mav_msgs/conversions.h>
 #include <mav_msgs/default_topics.h>
 #include <mav_msgs/eigen_mav_msgs.h>
-#include <nav_msgs/msg/Odometry.h>
+#include <nav_msgs/msg/odometry.h>
 
 #define M_PI    3.14159265358979323846  /* pi */
 

@@ -27,7 +27,7 @@
 #include <mav_msgs/msg/Actuators.hpp>
 #include <mav_msgs/msg/AttitudeThrust.hpp>
 #include <mav_msgs/msg/eigen_mav_msgs.hpp>
-#include <nav_msgs/msg/Odometry.hpp>
+#include <nav_msgs/msg/odometry.hpp>
 #include <ros/callback_queue.h>
 #include "rclcpp/rclcpp.hpp"
 #include <trajectory_msgs/msg/MultiDOFJointTrajectory.hpp>

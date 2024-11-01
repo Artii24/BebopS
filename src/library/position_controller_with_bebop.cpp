@@ -36,7 +36,7 @@
 #include <chrono>
 #include <inttypes.h>
 
-#include <nav_msgs/msg/Odometry.h>
+#include <nav_msgs/msg/odometry.h>
 #include <rclcpp/logging.hpp>
 #include <std_msgs/Empty.h>
 

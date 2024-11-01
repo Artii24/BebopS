@@ -22,7 +22,7 @@
 #include <chrono>
 #include <time.h>
 
-#include <trajectory_msgs/MultiDOFJointTrajectory.h>
+#include <trajectory_msgs/msg/multi_dof_joint_trajectory.hpp>
 
 
 using namespace std;
