@@ -34,7 +34,7 @@
 #include "parameters.h"
 #include "common.h"
 
-#include <gazebo_msgs/msg/GetWorldProperties.hpp>
+#include <gazebo_msgs/msg/get_world_properties.hpp>
 
 using namespace std;
 
