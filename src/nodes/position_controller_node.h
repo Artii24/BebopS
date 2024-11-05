@@ -23,18 +23,18 @@
 #include <Eigen/Eigen>
 #include <stdio.h>
 
-#include <geometry_msgs/msg/PoseStamped.hpp>
-#include <mav_msgs/msg/Actuators.hpp>
-#include <mav_msgs/msg/AttitudeThrust.hpp>
-#include <mav_msgs/msg/eigen_mav_msgs.hpp>
+#include <geometry_msgs/msg/pose_stamped.hpp>
+#include <mav_msgs/msg/actuators.hpp>
+#include <mav_msgs/msg/attitude_thrust.hpp>
+#include <mav_msgs/eigen_mav_msgs.hpp>
 #include <nav_msgs/msg/odometry.hpp>
-#include <ros/callback_queue.h>
+// #include <rclcpp/callback_queue.h>
 #include "rclcpp/rclcpp.hpp"
-#include <trajectory_msgs/msg/MultiDOFJointTrajectory.hpp>
+#include <trajectory_msgs/msg/multi_dof_joint_trajectory.hpp>
 
 #include "bebop_simulator_r2/common.h"
 #include "bebop_simulator_r2/position_controller.h"
-#include "bebop_simulator_r2/parameters_ros.h"
+#include "bebop_simulator_r2/parameters_rclcpp.h"
 #include "bebop_simulator_r2/parameters.h"
 
 namespace bebop_simulator {
@@ -48,6 +48,8 @@ namespace bebop_simulator {
             void Publish();
 
         private:
+            rclcpp::Node::SharedPtr nh_ = rclcpp::Node::make_shared("odometry");
+            rclcpp::Node::SharedPtr pnh_ = rclcpp::Node::make_shared("~");
 
             bool waypointHasBeenPublished_ = false;
 
@@ -56,26 +58,27 @@ namespace bebop_simulator {
             std::string namespace_;
 
             //subscribers
-            ros::Subscriber cmd_multi_dof_joint_trajectory_sub_;
-            ros::Subscriber odometry_sub_;
-            ros::Subscriber odometry_sub_gt_;
+
+            rclcpp::Subscription<trajectory_msgs::msg::MultiDOFJointTrajectory> cmd_multi_dof_joint_trajectory_sub_;
+            rclcpp::Subscription<nav_msgs::msg::Odometry::ConstPtr> odometry_sub_;
+            rclcpp::Subscription<nav_msgs::msg::Odometry::ConstPtr> odometry_sub_gt_;
 
             //publisher
-            ros::Publisher motor_velocity_reference_pub_;
-            ros::Publisher odometry_filtered_pub_;
-            ros::Publisher filtered_errors_pub_;
-            ros::Publisher reference_angles_pub_;
-            ros::Publisher smoothed_reference_pub_;
-            ros::Publisher uTerr_components_pub_;
-            ros::Publisher zVelocity_components_pub_;
-            ros::Publisher positionAndVelocityErrors_pub_;
-            ros::Publisher angularAndAngularVelocityErrors_pub_;
+            rclcpp::Publisher<mav_msgs::msg::Actuators> motor_velocity_reference_pub_;
+            rclcpp::Publisher<nav_msgs::msg::Odometry> odometry_filtered_pub_;
+            rclcpp::Publisher<nav_msgs::msg::Odometry> filtered_errors_pub_;
+            rclcpp::Publisher<nav_msgs::msg::Odometry> reference_angles_pub_;
+            rclcpp::Publisher<nav_msgs::msg::Odometry> smoothed_reference_pub_;
+            rclcpp::Publisher<nav_msgs::msg::Odometry> uTerr_components_pub_;
+            rclcpp::Publisher<nav_msgs::msg::Odometry> zVelocity_components_pub_;
+            rclcpp::Publisher<nav_msgs::msg::Odometry> positionAndVelocityErrors_pub_;
+            rclcpp::Publisher<nav_msgs::msg::Odometry> angularAndAngularVelocityErrors_pub_;
 
-            nav_msgs::Odometry odometry_gt_;
+            nav_msgs::msg::Odometry odometry_gt_;
 
-            void MultiDofJointTrajectoryCallback(const trajectory_msgs::MultiDOFJointTrajectoryConstPtr& trajectory_reference_msg);
-            void OdometryGTCallback(const nav_msgs::OdometryConstPtr& odometry_msg_gt);
-            void OdometryCallback(const nav_msgs::OdometryConstPtr& odometry_msg);
+            void MultiDofJointTrajectoryCallback(const trajectory_msgs::msg::MultiDOFJointTrajectory::ConstPtr& trajectory_reference_msg);
+            void OdometryGTCallback(const nav_msgs::msg::Odometry::ConstPtr& odometry_msg_gt);
+            void OdometryCallback(const nav_msgs::msg::Odometry::ConstPtr& odometry_msg);
 
 
     };
