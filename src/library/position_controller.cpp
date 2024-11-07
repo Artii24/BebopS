@@ -142,17 +142,16 @@ PositionController::PositionController()
             		filter_parameters_.Qp_ = Eigen::MatrixXf::Identity(6,6);
 
             	  // Timers set the outer and inner loops working frequency
-            		timer1_ = n1_.createTimer(ros::Duration(TsA), &PositionController::CallbackAttitude, this, false, true);
-            		timer2_ = n2_.createTimer(ros::Duration(TsP), &PositionController::CallbackPosition, this, false, true);
-
+            		timer1_ = n1_.create_wall_timer( std::chrono::duration<double, std::milli> TsA, &PositionController::CallbackAttitude);
+            		timer2_ = n2_.create_wall_timer(std::chrono::duration<double, TsP>, &PositionController::CallbackPosition);
 
 }
 
 //The library Destructor
 PositionController::~PositionController() {}
 
-//The callback saves data come from simulation into csv files
-void PositionController::CallbackSaveData(const rclcpp::TimerEvent& event){
+//The callback saves data come from simulation into csv files const ros::TimerEvent& event
+void PositionController::CallbackSaveData(){
 
       if(!dataStoring_active_){
          return;
@@ -179,7 +178,7 @@ void PositionController::CallbackSaveData(const rclcpp::TimerEvent& event){
       ofstream fileDronePosition;
       ofstream fileControlMixerUnSaturatedBefore;
 
-      ROS_INFO("CallbackSavaData function is working. Time: %f seconds, %f nanoseconds", odometry_.timeStampSec, odometry_.timeStampNsec);
+      RCLCPP_INFO(n1_.get_logger(),"CallbackSavaData function is working. Time: %f seconds, %f nanoseconds", odometry_.timeStampSec, odometry_.timeStampNsec);
     
       fileControllerGains.open("/home/" + user_ + "/controllerGains.csv", std::ios_base::app);
       fileVehicleParameters.open("/home/" + user_ + "/vehicleParameters.csv", std::ios_base::app);
@@ -396,7 +395,7 @@ void PositionController::SetLaunchFileParameters(){
 	if(dataStoring_active_){
 
 		// Time after which the data storing function is turned on
-		timer3_ = n3_.createTimer(ros::Duration(dataStoringTime_), &PositionController::CallbackSaveData, this, false, true);
+		timer3_ = n3_.createTimer(rclcpp::Duration(dataStoringTime_), &PositionController::CallbackSaveData, this, false, true);
 
 		// Cleaning the string vector contents
 		listControlSignals_.clear();
@@ -419,12 +418,14 @@ void PositionController::SetLaunchFileParameters(){
 	  listControlMixerTermsUnSaturatedBefore_.clear();
 
 		// The client needed to get information about the Gazebo simulation environment both the attitude and position errors
-		clientAttitude_ = clientHandleAttitude_.serviceClient<gazebo_msgs::GetWorldProperties>("/gazebo/get_world_properties");
-		clientPosition_ = clientHandlePosition_.serviceClient<gazebo_msgs::GetWorldProperties>("/gazebo/get_world_properties");
+		clientAttitude_ = clientHandleAttitude_.create_client<gazebo_msgs::srv::GetWorldProperties>("/gazebo/get_world_properties");
+		clientPosition_ = clientHandlePosition_.create_client<gazebo_msgs::srv::GetWorldProperties>("/gazebo/get_world_properties");
 
-		ros::WallTime beginWallOffset = ros::WallTime::now();
-		wallSecsOffset_ = beginWallOffset.toSec();
-
+		// rclcpp::WallTime beginWallOffset = rclcpp::WallTime::now();
+    const auto beginWallOffset = std::chrono::system_clock::now();
+    
+		// wallSecsOffset_ = beginWallOffset.count();
+    
 	}
 
 }
@@ -955,7 +956,7 @@ void PositionController::AttitudeController(double* u_phi, double* u_theta, doub
 
 
 //The function every TsA computes the attitude and angular velocity errors. When the data storing is active, the data are saved into csv files
-void PositionController::CallbackAttitude(const rclcpp::TimerEvent& event){
+void PositionController::CallbackAttitude(){
      
      AttitudeErrors(&e_phi_, &e_theta_, &e_psi_);
      AngularVelocityErrors(&dot_e_phi_, &dot_e_theta_, &dot_e_psi_);
@@ -968,9 +969,9 @@ void PositionController::CallbackAttitude(const rclcpp::TimerEvent& event){
         tempTimeAttitudeErrors << my_messageAttitude_.response.sim_time << "\n";
         listTimeAttitudeErrors_.push_back(tempTimeAttitudeErrors.str());
 
-        rclcpp::WallTime beginWall = rclcpp::WallTime::now();
-        double wallSecs = beginWall.toSec() - wallSecsOffset_;
-
+        const auto  beginWall = std::chrono::system_clock::now();
+        const std::chrono::duration<double, std::milli> fp_ms = beginWall - beginWallOffset;
+        double wallSecs = fp_ms.count();
         builtin_interfaces::msg::Time begin = builtin_interfaces::msg::Time::now();
         double secs = begin.toSec();
 
@@ -1004,7 +1005,7 @@ void PositionController::CallbackAttitude(const rclcpp::TimerEvent& event){
 //  * the EKF is used to estimate the drone attitude and linear velocity
 //  * the position and velocity errors are computed
 //  * the last part is used to store the data into csv files if the data storing is active
-void PositionController::CallbackPosition(const rclcpp::TimerEvent& event){
+void PositionController::CallbackPosition(){
   
      // The function is used to invoke the waypoint filter employs to reduce the error dimension along the axes when the drone stars to follow the trajectory.
      // The waypoint filter works with an update time of Tsp

@@ -104,14 +104,14 @@ class PositionControllerParameters {
             void SetVehicleParameters();
             void SetWaypointFilterParameters();
             void SetFilterParameters();
-            void GetOdometry(nav_msgs::Odometry* odometry_filtered);
-            void GetReferenceAngles(nav_msgs::Odometry* reference_angles);
-            void GetTrajectory(nav_msgs::Odometry* smoothed_trajectory);
-            void GetUTerrComponents(nav_msgs::Odometry* uTerrComponents);
+            void GetOdometry(nav_msgs::msg::Odometry* odometry_filtered);
+            void GetReferenceAngles(nav_msgs::msg::Odometry* reference_angles);
+            void GetTrajectory(nav_msgs::msg::Odometry* smoothed_trajectory);
+            void GetUTerrComponents(nav_msgs::msg::Odometry* uTerrComponents);
             void SetLaunchFileParameters();
-            void GetVelocityAlongZComponents(nav_msgs::Odometry* zVelocity_components);
-            void GetPositionAndVelocityErrors(nav_msgs::Odometry* positionAndVelocityErrors);
-            void GetAngularAndAngularVelocityErrors(nav_msgs::Odometry* angularAndAngularVelocityErrors);
+            void GetVelocityAlongZComponents(nav_msgs::msg::Odometry* zVelocity_components);
+            void GetPositionAndVelocityErrors(nav_msgs::msg::Odometry* positionAndVelocityErrors);
+            void GetAngularAndAngularVelocityErrors(nav_msgs::msg::Odometry* angularAndAngularVelocityErrors);
             
             PositionControllerParameters controller_parameters_;
             ExtendedKalmanFilter extended_kalman_filter_bebop_;
@@ -136,13 +136,13 @@ class PositionControllerParameters {
             double wallSecsOffset_;
 
             //Gazebo Message for attitude and position
-            gazebo_msgs::GetWorldProperties my_messagePosition_;
-            ros::NodeHandle clientHandlePosition_;
-            ros::ServiceClient clientPosition_;
+            gazebo_msgs::srv::GetWorldProperties my_messagePosition_;
+            rclcpp::Node clientHandlePosition_;
+            rclcpp::Client<gazebo_msgs::srv::GetWorldProperties>::SharedPtr clientPosition_;
 
-            ros::NodeHandle clientHandleAttitude_;
-            ros::ServiceClient clientAttitude_;
-            gazebo_msgs::GetWorldProperties my_messageAttitude_;
+            rclcpp::Node clientHandleAttitude_;
+            rclcpp::Client<gazebo_msgs::srv::GetWorldProperties>::SharedPtr clientAttitude_;
+            gazebo_msgs::srv::GetWorldProperties my_messageAttitude_;
 
             //Sting vectors used to stare data
             std::vector<string> listControlSignals_;
@@ -200,19 +200,19 @@ class PositionControllerParameters {
             double l_, bm_;
             double Ix_, Iy_, Iz_;
             
-            rclcpp::NodeHandle n1_;
-            rclcpp::NodeHandle n2_;
-            rclcpp::NodeHandle n3_;
-            rclcpp::Timer timer1_;
-            rclcpp::Timer timer2_;
-            rrclcpp::Timer timer3_;
+            rclcpp::Node n1_;
+            rclcpp::Node n2_;
+            rclcpp::Node n3_;
+            rclcpp::Time timer1_;
+            rclcpp::Time timer2_;
+            rclcpp::Time timer3_;
 
-            //Callback functions to compute the errors among axis and angles
-            void CallbackAttitude(const rclcpp::TimerEvent& event);
-            void CallbackPosition(const rclcpp::TimerEvent& event);
-            void CallbackSaveData(const rclcpp::TimerEvent& event);
+            //Callback functions to compute the errors among axis and angles const ros::TimerEvent& event
+            void CallbackAttitude();
+            void CallbackPosition();
+            void CallbackSaveData();
 
-            nav_msgs::Odometry odometry_filtered_private_;
+            nav_msgs::msg::Odometry odometry_filtered_private_;
 
 	        state_t state_;
             control_t control_;
