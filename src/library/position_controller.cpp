@@ -39,8 +39,8 @@
 
 
 #define M_PI                      3.14159265358979323846  /* pi */
-#define TsP                       10e-3  /* Position control sampling time */
-#define TsA                       5e-3 /* Attitude control sampling time */
+#define TsP                       10/*e-3   Position control sampling time in milliseconds*/
+#define TsA                      5/*e-3  Attitude control sampling time in milliseconds*/
 #define MAX_ROTOR_VELOCITY        1475 /* Max rotors velocity [rad/s] */
 #define MIN_ROTOR_VELOCITY        0 /* Min rotors velocity [rad/s] */
 #define POW_MAX_ROTOR_VELOCITY    MAX_ROTOR_VELOCITY*MAX_ROTOR_VELOCITY /* Squared max rotors velocity [rad/s] */
@@ -140,13 +140,17 @@ PositionController::PositionController()
             		filter_parameters_.Qp_vz_ = 0;
             		filter_parameters_.Rp_ = Eigen::MatrixXf::Zero(6,6);
             		filter_parameters_.Qp_ = Eigen::MatrixXf::Identity(6,6);
-
+                clientHandleAttitude_=rclcpp::Node::make_shared("handle_attitude");
+                clientHandlePosition_=rclcpp::Node::make_shared("handle_position");
+                n1_=rclcpp::Node::make_shared("nh1");
+                n2_=rclcpp::Node::make_shared("nh2");
+                n3_=rclcpp::Node::make_shared("nh3");
             	  // Timers set the outer and inner loops working frequency
-            		timer1_ = n1_.create_wall_timer( std::chrono::duration<double, std::milli> TsA, &PositionController::CallbackAttitude);
-            		timer2_ = n2_.create_wall_timer(std::chrono::duration<double, TsP>, &PositionController::CallbackPosition);
+            		timer1_ = n1_->create_wall_timer(std::chrono::duration<double, std::ratio<1, 1000/TsA>>, &PositionController::CallbackAttitude);
+            		timer2_ = n2_->create_wall_timer(std::chrono::duration<double, std::ratio<1, 1000/TsP>>, &PositionController::CallbackPosition);
 
 }
-
+// auto t = std::chrono::milliseconds(TsA);
 //The library Destructor
 PositionController::~PositionController() {}
 

@@ -137,10 +137,10 @@ class PositionControllerParameters {
 
             //Gazebo Message for attitude and position
             gazebo_msgs::srv::GetWorldProperties my_messagePosition_;
-            rclcpp::Node clientHandlePosition_;
+            rclcpp::Node::SharedPtr clientHandlePosition_;
             rclcpp::Client<gazebo_msgs::srv::GetWorldProperties>::SharedPtr clientPosition_;
 
-            rclcpp::Node clientHandleAttitude_;
+            rclcpp::Node::SharedPtr clientHandleAttitude_;
             rclcpp::Client<gazebo_msgs::srv::GetWorldProperties>::SharedPtr clientAttitude_;
             gazebo_msgs::srv::GetWorldProperties my_messageAttitude_;
 
@@ -200,9 +200,9 @@ class PositionControllerParameters {
             double l_, bm_;
             double Ix_, Iy_, Iz_;
             
-            rclcpp::Node n1_;
-            rclcpp::Node n2_;
-            rclcpp::Node n3_;
+            rclcpp::Node::SharedPtr n1_;
+            rclcpp::Node::SharedPtr n2_;
+            rclcpp::Node::SharedPtr n3_;
             rclcpp::Time timer1_;
             rclcpp::Time timer2_;
             rclcpp::Time timer3_;
