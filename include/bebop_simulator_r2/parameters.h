@@ -19,6 +19,7 @@
 #ifndef INCLUDE_BEBOP_CONTROL_PARAMETERS_H_
 #define INCLUDE_BEBOP_CONTROL_PARAMETERS_H_
 
+#include <eigen3/Eigen/Core>
 namespace bebop_simulator {
 
 // Default Bebop 2 parameters

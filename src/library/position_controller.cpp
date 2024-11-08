@@ -55,7 +55,7 @@ PositionController::PositionController()
       waypointFilter_active_(true),
       EKF_active_(false),
       dataStoringTime_(0),
-      wallSecsOffset_(0),
+      // wallSecsOffset_(0),
       e_x_(0),
       e_y_(0),
       e_z_(0),
@@ -146,8 +146,8 @@ PositionController::PositionController()
                 n2_=rclcpp::Node::make_shared("nh2");
                 n3_=rclcpp::Node::make_shared("nh3");
             	  // Timers set the outer and inner loops working frequency
-            		timer1_ = n1_->create_wall_timer(std::chrono::duration<double, std::ratio<1, 1000/TsA>>, &PositionController::CallbackAttitude);
-            		timer2_ = n2_->create_wall_timer(std::chrono::duration<double, std::ratio<1, 1000/TsP>>, &PositionController::CallbackPosition);
+            		timer1_ = n1_->create_wall_timer(std::chrono::duration<int64_t, std::milli>(TsA), std::bind(&PositionController::CallbackAttitude,this));
+            		timer2_ = n2_->create_wall_timer(std::chrono::duration<int64_t, std::milli>(TsP), std::bind(&PositionController::CallbackPosition,this));
 
 }
 // auto t = std::chrono::milliseconds(TsA);
@@ -182,7 +182,7 @@ void PositionController::CallbackSaveData(){
       ofstream fileDronePosition;
       ofstream fileControlMixerUnSaturatedBefore;
 
-      RCLCPP_INFO(n1_.get_logger(),"CallbackSavaData function is working. Time: %f seconds, %f nanoseconds", odometry_.timeStampSec, odometry_.timeStampNsec);
+      RCLCPP_INFO(n1_->get_logger(),"CallbackSavaData function is working. Time: %f seconds, %f nanoseconds", odometry_.timeStampSec, odometry_.timeStampNsec);
     
       fileControllerGains.open("/home/" + user_ + "/controllerGains.csv", std::ios_base::app);
       fileVehicleParameters.open("/home/" + user_ + "/vehicleParameters.csv", std::ios_base::app);
@@ -399,7 +399,8 @@ void PositionController::SetLaunchFileParameters(){
 	if(dataStoring_active_){
 
 		// Time after which the data storing function is turned on
-		timer3_ = n3_.createTimer(rclcpp::Duration(dataStoringTime_), &PositionController::CallbackSaveData, this, false, true);
+
+		timer3_ = n3_->create_wall_timer(std::chrono::duration<int64_t,std::milli>(dataStoringTime_), std::bind(&PositionController::CallbackSaveData,this));
 
 		// Cleaning the string vector contents
 		listControlSignals_.clear();
@@ -422,13 +423,13 @@ void PositionController::SetLaunchFileParameters(){
 	  listControlMixerTermsUnSaturatedBefore_.clear();
 
 		// The client needed to get information about the Gazebo simulation environment both the attitude and position errors
-		clientAttitude_ = clientHandleAttitude_.create_client<gazebo_msgs::srv::GetWorldProperties>("/gazebo/get_world_properties");
-		clientPosition_ = clientHandlePosition_.create_client<gazebo_msgs::srv::GetWorldProperties>("/gazebo/get_world_properties");
+		clientAttitude_ = clientHandleAttitude_->create_client<gazebo_msgs::srv::GetWorldProperties>("/gazebo/get_world_properties");
+		clientPosition_ = clientHandlePosition_->create_client<gazebo_msgs::srv::GetWorldProperties>("/gazebo/get_world_properties");
 
-		// rclcpp::WallTime beginWallOffset = rclcpp::WallTime::now();
-    const auto beginWallOffset = std::chrono::system_clock::now();
+		// rclcpp::WallTime beginWallOffset_ = rclcpp::WallTime::now();
+    const auto beginWallOffset_ = std::chrono::system_clock::now();
     
-		// wallSecsOffset_ = beginWallOffset.count();
+		// wallSecsOffset_ = beginWallOffset_.count();
     
 	}
 
@@ -495,7 +496,7 @@ void PositionController::SetTrajectoryPoint(const mav_msgs::EigenTrajectoryPoint
 }
 
 // Just to plot the data during the simulation
-void PositionController::GetTrajectory(nav_msgs::Odometry* smoothed_trajectory){
+void PositionController::GetTrajectory(nav_msgs::msg::Odometry* smoothed_trajectory){
 
    smoothed_trajectory->pose.pose.position.x = command_trajectory_.position_W[0];
    smoothed_trajectory->pose.pose.position.y = command_trajectory_.position_W[1];
@@ -504,14 +505,14 @@ void PositionController::GetTrajectory(nav_msgs::Odometry* smoothed_trajectory){
 }
 
 // Just to plot the data during the simulation
-void PositionController::GetOdometry(nav_msgs::Odometry* odometry_filtered){
+void PositionController::GetOdometry(nav_msgs::msg::Odometry* odometry_filtered){
 
    *odometry_filtered = odometry_filtered_private_;
 
 }
 
 // Just to analyze the components that get uTerr variable
-void PositionController::GetUTerrComponents(nav_msgs::Odometry* uTerrComponents){
+void PositionController::GetUTerrComponents(nav_msgs::msg::Odometry* uTerrComponents){
 
   uTerrComponents->pose.pose.position.x = ( (alpha_z_/mu_z_) * dot_e_z_);
   uTerrComponents->pose.pose.position.y = - ( (beta_z_/pow(mu_z_,2)) * e_z_);
@@ -520,7 +521,7 @@ void PositionController::GetUTerrComponents(nav_msgs::Odometry* uTerrComponents)
 }
 
 // Just to analyze the position and velocity errors
-void PositionController::GetPositionAndVelocityErrors(nav_msgs::Odometry* positionAndVelocityErrors){
+void PositionController::GetPositionAndVelocityErrors(nav_msgs::msg::Odometry* positionAndVelocityErrors){
 
   positionAndVelocityErrors->pose.pose.position.x = e_x_;
   positionAndVelocityErrors->pose.pose.position.y = e_y_;
@@ -533,7 +534,7 @@ void PositionController::GetPositionAndVelocityErrors(nav_msgs::Odometry* positi
 }
 
 // Just to analyze the attitude and angular velocity errors
-void PositionController::GetAngularAndAngularVelocityErrors(nav_msgs::Odometry* angularAndAngularVelocityErrors){
+void PositionController::GetAngularAndAngularVelocityErrors(nav_msgs::msg::Odometry* angularAndAngularVelocityErrors){
 
   angularAndAngularVelocityErrors->pose.pose.position.x = e_phi_;
   angularAndAngularVelocityErrors->pose.pose.position.y = e_theta_;
@@ -546,7 +547,7 @@ void PositionController::GetAngularAndAngularVelocityErrors(nav_msgs::Odometry* 
 }
 
 // Just to plot the data during the simulation
-void PositionController::GetReferenceAngles(nav_msgs::Odometry* reference_angles){
+void PositionController::GetReferenceAngles(nav_msgs::msg::Odometry* reference_angles){
    assert(reference_angles);
 
    double u_x, u_y, u_z, u_Terr;
@@ -563,7 +564,7 @@ void PositionController::GetReferenceAngles(nav_msgs::Odometry* reference_angles
 }
 
 // Just to plot the components make able to compute dot_e_z
-void PositionController::GetVelocityAlongZComponents(nav_msgs::Odometry* zVelocity_components){
+void PositionController::GetVelocityAlongZComponents(nav_msgs::msg::Odometry* zVelocity_components){
   assert(zVelocity_components);
 
   zVelocity_components->pose.pose.position.x = state_.linearVelocity.x;
@@ -967,36 +968,35 @@ void PositionController::CallbackAttitude(){
 
      //Saving the time instant when the attitude errors are computed
      if(dataStoring_active_){	
-        clientAttitude_.call(my_messageAttitude_);
-
+        my_messageAttitude_ = clientAttitude_->async_send_request(gazebo_msgs::srv::GetWorldProperties::Request::SharedPtr());
         std::stringstream tempTimeAttitudeErrors;
-        tempTimeAttitudeErrors << my_messageAttitude_.response.sim_time << "\n";
+        tempTimeAttitudeErrors << my_messageAttitude_.get()->sim_time << "\n";
         listTimeAttitudeErrors_.push_back(tempTimeAttitudeErrors.str());
 
         const auto  beginWall = std::chrono::system_clock::now();
-        const std::chrono::duration<double, std::milli> fp_ms = beginWall - beginWallOffset;
+        const std::chrono::duration<double, std::milli> fp_ms = beginWall - beginWallOffset_;
         double wallSecs = fp_ms.count();
-        builtin_interfaces::msg::Time begin = builtin_interfaces::msg::Time::now();
-        double secs = begin.toSec();
+        // builtin_interfaces::msg::Time begin = builtin_interfaces::msg::Time();//::.now()
+        double secs = clientHandleAttitude_->now().seconds();
 
         //Saving attitude derivate errors in a file
         std::stringstream tempDerivativeAttitudeErrors;
         tempDerivativeAttitudeErrors << dot_e_phi_ << "," << dot_e_theta_ << "," << dot_e_psi_ << "," <<odometry_.timeStampSec << "," << odometry_.timeStampNsec << ","
-            << my_messageAttitude_.response.sim_time << "," << wallSecs << "," << secs << "\n";
+            << my_messageAttitude_.get()->sim_time << "," << wallSecs << "," << secs << "\n";
 
         listDerivativeAttitudeErrors_.push_back(tempDerivativeAttitudeErrors.str());
 
         //Saving attitude errors in a file
         std::stringstream tempAttitudeErrors;
         tempAttitudeErrors << e_phi_ << "," << e_theta_ << "," << e_psi_ << "," <<odometry_.timeStampSec << "," << odometry_.timeStampNsec << ","
-            << my_messageAttitude_.response.sim_time << "," << wallSecs << "," << secs << "\n";
+            << my_messageAttitude_.get()->sim_time << "," << wallSecs << "," << secs << "\n";
 
         listAttitudeErrors_.push_back(tempAttitudeErrors.str());
 
         //Saving the drone position along axes
         std::stringstream tempDronePosition;
         tempDronePosition << state_.position.x << "," << state_.position.y << "," << state_.position.z << ","
-            << odometry_.timeStampSec << "," << odometry_.timeStampNsec << "," << my_messagePosition_.response.sim_time << "," << wallSecs << "," << secs << "\n";
+            << odometry_.timeStampSec << "," << odometry_.timeStampNsec << "," << my_messagePosition_.get()->sim_time << "," << wallSecs << "," << secs << "\n";
 
         listDronePosition_.push_back(tempDronePosition.str());
 
@@ -1027,36 +1027,38 @@ void PositionController::CallbackPosition(){
 
      //Saving the time instant when the position errors are computed
      if(dataStoring_active_){
-        clientPosition_.call(my_messagePosition_);
+        my_messagePosition_ = clientPosition_->async_send_request(gazebo_msgs::srv::GetWorldProperties::Request::SharedPtr());
 
         std::stringstream tempTimePositionErrors;
-        tempTimePositionErrors << my_messagePosition_.response.sim_time << "\n";
+        tempTimePositionErrors << my_messagePosition_.get()->sim_time << "\n";
         listTimePositionErrors_.push_back(tempTimePositionErrors.str());
 
-        rclcpp::WallTime beginWall = rclcpp::WallTime::now();
-        double wallSecs = beginWall.toSec() - wallSecsOffset_;
-
-        builtin_interfaces::msg::Time begin = builtin_interfaces::msg::Time::now();
-        double secs = begin.toSec();
+        // rclcpp::WallTime beginWall = rclcpp::WallTime::now();
+        // double wallSecs = beginWall.toSec() - wallSecsOffset_;
+        const auto  beginWall = std::chrono::system_clock::now();
+        const std::chrono::duration<double, std::milli> fp_ms = beginWall - beginWallOffset_;
+        double wallSecs = fp_ms.count();
+        // builtin_interfaces::msg::Time begin = builtin_interfaces::msg::Time::now();
+        double secs = clientHandlePosition_->now().seconds();
 
         //Saving velocity errors in a file
         std::stringstream tempVelocityErrors;
         tempVelocityErrors << dot_e_x_ << "," << dot_e_y_ << "," << dot_e_z_ << "," <<odometry_.timeStampSec << "," << odometry_.timeStampNsec << ","
-            << my_messagePosition_.response.sim_time << "," << wallSecs << "," << secs << "\n";
+            << my_messagePosition_.get()->sim_time << "," << wallSecs << "," << secs << "\n";
 
         listVelocityErrors_.push_back(tempVelocityErrors.str());
 
         //Saving trajectory errors in a file
         std::stringstream tempTrajectoryErrors;
         tempTrajectoryErrors << e_x_ << "," << e_y_ << "," << e_z_ << "," <<odometry_.timeStampSec << "," << odometry_.timeStampNsec << ","
-            << my_messagePosition_.response.sim_time << "," << wallSecs << "," << secs << "\n";
+            << my_messagePosition_.get()->sim_time << "," << wallSecs << "," << secs << "\n";
 
         listTrajectoryErrors_.push_back(tempTrajectoryErrors.str());
 
         //Saving the drone trajectory references (them coming from the waypoint filter)
         std::stringstream tempTrajectoryReferences;
         tempTrajectoryReferences << command_trajectory_.position_W[0] << "," << command_trajectory_.position_W[1] << "," << command_trajectory_.position_W[2] << ","
-            <<odometry_.timeStampSec << "," << odometry_.timeStampNsec << "," << my_messagePosition_.response.sim_time << "," << wallSecs << "," << secs << "\n";
+            <<odometry_.timeStampSec << "," << odometry_.timeStampNsec << "," << my_messagePosition_.get()->sim_time << "," << wallSecs << "," << secs << "\n";
 
         listDroneTrajectoryReference_.push_back(tempTrajectoryReferences.str());
 

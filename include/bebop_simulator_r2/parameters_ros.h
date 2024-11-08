@@ -2,26 +2,26 @@
 #define INCLUDE_BEBOP_CONTROL_PARAMETERS_ROS_H_
 
 #include "rclcpp/rclcpp.hpp"
-
+#include <rcpputils/asserts.hpp>
 #include "parameters.h"
 
 namespace bebop_simulator {
 
-template<typename T> inline void GetRosParameter(const ros::NodeHandle& nh,
+template<typename T> inline void GetRosParameter(const rclcpp::Node::SharedPtr& nh,
                                                  const std::string& key,
                                                  const T& default_value,
                                                  T* value) {
-  ROS_ASSERT(value != nullptr);
-  bool have_parameter = nh.getParam(key, *value);
+  rcpputils::assert_true(value != nullptr);
+  bool have_parameter = nh->get_parameter(key, *value);
   if (!have_parameter) {
-    ROS_WARN_STREAM("[rosparam]: could not find parameter " << nh.getNamespace()
+    RCLCPP_WARN_STREAM(nh->get_logger(),"[rosparam]: could not find parameter " << nh->get_namespace()
                     << "/" << key << ", setting to default: " << default_value);
     *value = default_value;
   }
 }
 
 // The function allows to take data from the yaml file describing the quadrotor paramters
-inline void GetVehicleParameters(const ros::NodeHandle& nh, VehicleParameters* vehicle_parameters) {
+inline void GetVehicleParameters(const rclcpp::Node::SharedPtr& nh, VehicleParameters* vehicle_parameters) {
   GetRosParameter(nh, "mass",
                   vehicle_parameters->mass_,
                   &vehicle_parameters->mass_);

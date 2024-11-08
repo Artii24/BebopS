@@ -122,7 +122,7 @@ class PositionControllerParameters {
 
             //Launch file parameters
             std::string user_;
-            double dataStoringTime_;
+            const int64_t dataStoringTime_;
             bool dataStoring_active_;
             bool waypointFilter_active_;
             bool EKF_active_;
@@ -133,17 +133,17 @@ class PositionControllerParameters {
             bool controller_active_;
 
             //Wall clock time offset variable
-            double wallSecsOffset_;
+            std::chrono::time_point<std::chrono::system_clock> beginWallOffset_;
 
             //Gazebo Message for attitude and position
-            gazebo_msgs::srv::GetWorldProperties my_messagePosition_;
+            std::shared_future<gazebo_msgs::srv::GetWorldProperties::Response::SharedPtr> my_messagePosition_;
             rclcpp::Node::SharedPtr clientHandlePosition_;
             rclcpp::Client<gazebo_msgs::srv::GetWorldProperties>::SharedPtr clientPosition_;
 
             rclcpp::Node::SharedPtr clientHandleAttitude_;
             rclcpp::Client<gazebo_msgs::srv::GetWorldProperties>::SharedPtr clientAttitude_;
-            gazebo_msgs::srv::GetWorldProperties my_messageAttitude_;
-
+            std::shared_future<gazebo_msgs::srv::GetWorldProperties::Response::SharedPtr> my_messageAttitude_;
+            // rclcpp::detail::
             //Sting vectors used to stare data
             std::vector<string> listControlSignals_;
             std::vector<string> listControlMixerTerms_;
@@ -203,9 +203,9 @@ class PositionControllerParameters {
             rclcpp::Node::SharedPtr n1_;
             rclcpp::Node::SharedPtr n2_;
             rclcpp::Node::SharedPtr n3_;
-            rclcpp::Time timer1_;
-            rclcpp::Time timer2_;
-            rclcpp::Time timer3_;
+            rclcpp::TimerBase::SharedPtr timer1_;
+            rclcpp::TimerBase::SharedPtr timer2_;
+            rclcpp::TimerBase::SharedPtr timer3_;
 
             //Callback functions to compute the errors among axis and angles const ros::TimerEvent& event
             void CallbackAttitude();

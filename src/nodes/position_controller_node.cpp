@@ -238,38 +238,38 @@ void PositionControllerNode::InitializeParams() {
   bool waypointFilterActive;
   bool dataStoringActive;
   bool EKFActive;
-  double dataStoringTime;
+  int64_t dataStoringTime;
   std::string user;
 
-  if (pnh_.getParam("user_account", user)){
+  if (pnh_->getParam("user_account", user)){
 	  RCLCPP_INFO(nh_->get_logger(), "Got param 'user_account': %s", user.c_str());
 	  position_controller_.user_ = user;
   }
   else
       RCLCPP_ERROR(nh_->get_logger(), "Failed to get param 'user'");
 
-  if (pnh_.getParam("waypoint_filter", waypointFilterActive)){
+  if (pnh_->getParam("waypoint_filter", waypointFilterActive)){
     RCLCPP_INFO(nh_->get_logger(), "Got param 'waypoint_filter': %d", waypointFilterActive);
     position_controller_.waypointFilter_active_ = waypointFilterActive;
   }
   else
       RCLCPP_ERROR(nh_->get_logger(), "Failed to get param 'waypoint_filter'");
 
-  if (pnh_.getParam("csvFilesStoring", dataStoringActive)){
+  if (pnh_->getParam("csvFilesStoring", dataStoringActive)){
 	  RCLCPP_INFO(nh_->get_logger(), "Got param 'csvFilesStoring': %d", dataStoringActive);
 	  position_controller_.dataStoring_active_ = dataStoringActive;
   }
   else
       RCLCPP_ERROR(nh_->get_logger(), "Failed to get param 'csvFilesStoring'");
 
-  if (pnh_.getParam("EKFActive", EKFActive)){
+  if (pnh_->getParam("EKFActive", EKFActive)){
     RCLCPP_INFO(nh_->get_logger(), "Got param 'EKFActive': %d", EKFActive);
     position_controller_.EKF_active_ = EKFActive;
   }
   else
       RCLCPP_ERROR(nh_->get_logger(), "Failed to get param 'EKFActive'");
 
-  if (pnh_.getParam("csvFilesStoringTime", dataStoringTime)){
+  if (pnh_->getParam("csvFilesStoringTime", dataStoringTime)){
 	  RCLCPP_INFO(nh_->get_logger(), "Got param 'csvFilesStoringTime': %f", dataStoringTime);
 	  position_controller_.dataStoringTime_ = dataStoringTime;
   }
