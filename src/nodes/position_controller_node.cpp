@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-#include "rclcpp/rclcpp.hpp"
+// #include "rclcpp/rclcpp.hpp"
 #include <mav_msgs/default_topics.hpp>
 #include <rclcpp/logging.hpp> 
 
@@ -37,13 +37,19 @@ PositionControllerNode::PositionControllerNode() {
     InitializeParams();
     //To get the trajectory to follow
 
-    cmd_multi_dof_joint_trajectory_sub_ = nh_->create_subscription<trajectory_msgs::msg::MultiDOFJointTrajectory>(mav_msgs::default_topics::COMMAND_TRAJECTORY, 10, &PositionControllerNode::MultiDofJointTrajectoryCallback);
+    cmd_multi_dof_joint_trajectory_sub_ = nh_->create_subscription<trajectory_msgs::msg::MultiDOFJointTrajectory>("command/trajectory",
+      rclcpp::SystemDefaultsQoS(),
+      std::bind(&PositionControllerNode::MultiDofJointTrajectoryCallback,this,std::placeholders::_1));
 
     //To get data coming from the the virtual odometry sensor
-    odometry_sub_ = nh_->create_subscription<nav_msgs::msg::Odometry::ConstPtr>(mav_msgs::default_topics::ODOMETRY, 1, &PositionControllerNode::OdometryCallback, this);
-
+    odometry_sub_ = nh_->create_subscription<nav_msgs::msg::Odometry>(mav_msgs::default_topics::ODOMETRY,
+     rclcpp::SystemDefaultsQoS(),
+      std::bind(&PositionControllerNode::OdometryCallback,this,std::placeholders::_1));
+    // nh_->create_subscription<typename MessageT>(const std::string &topic_name, const rclcpp::QoS &qos, CallbackT &&callback)
     //Useful to compare the results obtained by using the noised and biased virtual odometry sensor
-    odometry_sub_gt_ = nh_->create_subscription<nav_msgs::msg::Odometry::ConstPtr>(bebop_simulator_msgs::default_topics::ODOMETRY_GT, 1, &PositionControllerNode::OdometryGTCallback, this);
+    odometry_sub_gt_ = nh_->create_subscription<nav_msgs::msg::Odometry>(bebop_simulator_msgs::default_topics::ODOMETRY_GT,
+     rclcpp::SystemDefaultsQoS(),
+     std::bind(&PositionControllerNode::OdometryGTCallback,this,std::placeholders::_1));
 
     //To publish the propellers angular speed
     motor_velocity_reference_pub_ = nh_->create_publisher<mav_msgs::msg::Actuators>(mav_msgs::default_topics::COMMAND_ACTUATORS, 1);
@@ -77,7 +83,7 @@ PositionControllerNode::PositionControllerNode() {
 //Destructor
 PositionControllerNode::~PositionControllerNode(){}
 
-void PositionControllerNode::MultiDofJointTrajectoryCallback(const trajectory_msgs::msg::MultiDOFJointTrajectory::ConstPtr & msg) {
+void PositionControllerNode::MultiDofJointTrajectoryCallback(const trajectory_msgs::msg::MultiDOFJointTrajectory::SharedPtr  msg) {
 
   const size_t n_commands = msg->points.size();
 
@@ -241,35 +247,35 @@ void PositionControllerNode::InitializeParams() {
   int64_t dataStoringTime;
   std::string user;
 
-  if (pnh_->getParam("user_account", user)){
+  if (pnh_->get_parameter("user_account", user)){
 	  RCLCPP_INFO(nh_->get_logger(), "Got param 'user_account': %s", user.c_str());
 	  position_controller_.user_ = user;
   }
   else
       RCLCPP_ERROR(nh_->get_logger(), "Failed to get param 'user'");
 
-  if (pnh_->getParam("waypoint_filter", waypointFilterActive)){
+  if (pnh_->get_parameter("waypoint_filter", waypointFilterActive)){
     RCLCPP_INFO(nh_->get_logger(), "Got param 'waypoint_filter': %d", waypointFilterActive);
     position_controller_.waypointFilter_active_ = waypointFilterActive;
   }
   else
       RCLCPP_ERROR(nh_->get_logger(), "Failed to get param 'waypoint_filter'");
 
-  if (pnh_->getParam("csvFilesStoring", dataStoringActive)){
+  if (pnh_->get_parameter("csvFilesStoring", dataStoringActive)){
 	  RCLCPP_INFO(nh_->get_logger(), "Got param 'csvFilesStoring': %d", dataStoringActive);
 	  position_controller_.dataStoring_active_ = dataStoringActive;
   }
   else
       RCLCPP_ERROR(nh_->get_logger(), "Failed to get param 'csvFilesStoring'");
 
-  if (pnh_->getParam("EKFActive", EKFActive)){
+  if (pnh_->get_parameter("EKFActive", EKFActive)){
     RCLCPP_INFO(nh_->get_logger(), "Got param 'EKFActive': %d", EKFActive);
     position_controller_.EKF_active_ = EKFActive;
   }
   else
       RCLCPP_ERROR(nh_->get_logger(), "Failed to get param 'EKFActive'");
 
-  if (pnh_->getParam("csvFilesStoringTime", dataStoringTime)){
+  if (pnh_->get_parameter("csvFilesStoringTime", dataStoringTime)){
 	  RCLCPP_INFO(nh_->get_logger(), "Got param 'csvFilesStoringTime': %f", dataStoringTime);
 	  position_controller_.dataStoringTime_ = dataStoringTime;
   }
@@ -285,7 +291,7 @@ void PositionControllerNode::Publish(){
 }
 
 // Odometry ground truth callback
-void PositionControllerNode::OdometryGTCallback(const nav_msgs::msg::Odometry::ConstPtr & odometry_msg_gt) {
+void PositionControllerNode::OdometryGTCallback(const nav_msgs::msg::Odometry::SharedPtr odometry_msg_gt) {
 
     RCLCPP_INFO_ONCE(nh_->get_logger(), "PositionController got first odometry ground truth message.");
 
@@ -305,7 +311,7 @@ void PositionControllerNode::OdometryGTCallback(const nav_msgs::msg::Odometry::C
 }
 
 // Odometry callback
-void PositionControllerNode::OdometryCallback(const nav_msgs::msg::Odometry::ConstPtr & odometry_msg) {
+void PositionControllerNode::OdometryCallback(const nav_msgs::msg::Odometry::SharedPtr  odometry_msg) {
 
     RCLCPP_INFO_ONCE(nh_->get_logger(), "PositionController got first odometry message.");
 
@@ -321,58 +327,60 @@ void PositionControllerNode::OdometryCallback(const nav_msgs::msg::Odometry::Con
 	      position_controller_.CalculateRotorVelocities(&ref_rotor_velocities);
 
 	      //creating a new mav message. actuator_msg is used to send the velocities of the propellers.  
-	      mav_msgs::msg::Actuators::Ptr actuator_msg(new mav_msgs::msg::Actuators);
+	      mav_msgs::msg::Actuators actuator_msg;
+        // (new mav_msgs::msg::Actuators);
+
 
 	      //we use clear because we later want to be sure that we used the previously calculated velocity.
-	      actuator_msg->angular_velocities.clear();
+	      actuator_msg.angular_velocities.clear();
 	      //for all propellers, we put them into actuator_msg so they will later be used to control the drone.
 	      for (int i = 0; i < ref_rotor_velocities.size(); i++)
-	        actuator_msg->angular_velocities.push_back(ref_rotor_velocities[i]);
+	        actuator_msg.angular_velocities.push_back(ref_rotor_velocities[i]);
               
-        actuator_msg->header.stamp = odometry_msg->header.stamp;
-        motor_velocity_reference_pub_.publish(actuator_msg);
+        actuator_msg.header.stamp = odometry_msg->header.stamp;
+        motor_velocity_reference_pub_->publish(actuator_msg);
 
 	      //The code reported below is used to plot the data when the simulation is running
 	      nav_msgs::msg::Odometry odometry_filtered;
 	      position_controller_.GetOdometry(&odometry_filtered);
 	      odometry_filtered.header.stamp = odometry_msg->header.stamp;
-	      odometry_filtered_pub_.publish(odometry_filtered);
+	      odometry_filtered_pub_->publish(odometry_filtered);
 
 	      // Just for data plotting
 	      nav_msgs::msg::Odometry reference_angles;
 	      position_controller_.GetReferenceAngles(&reference_angles);
 	      reference_angles.header.stamp = odometry_msg->header.stamp;
-	      reference_angles_pub_.publish(reference_angles);
+	      reference_angles_pub_->publish(reference_angles);
 
 	      // Just for data plotting
 	      nav_msgs::msg::Odometry smoothed_reference;
 	      position_controller_.GetTrajectory(&smoothed_reference);
 	      smoothed_reference.header.stamp = odometry_msg->header.stamp;
-	      smoothed_reference_pub_.publish(smoothed_reference);
+	      smoothed_reference_pub_->publish(smoothed_reference);
 
 	      // Just for data plotting
 	      nav_msgs::msg::Odometry uTerr_components;
 	      position_controller_.GetUTerrComponents(&uTerr_components);
 	      uTerr_components.header.stamp = odometry_msg->header.stamp;
-	      uTerr_components_pub_.publish(uTerr_components);
+	      uTerr_components_pub_->publish(uTerr_components);
 
 	      // Just for data plotting
 	      nav_msgs::msg::Odometry zVelocity_components;
 	      position_controller_.GetVelocityAlongZComponents(&zVelocity_components);
 	      zVelocity_components.header.stamp = odometry_msg->header.stamp;
-	      zVelocity_components_pub_.publish(zVelocity_components);
+	      zVelocity_components_pub_->publish(zVelocity_components);
 
 	      // Just for data plotting
 	      nav_msgs::msg::Odometry positionAndVelocityErrors;
 	      position_controller_.GetPositionAndVelocityErrors(&positionAndVelocityErrors);
 	      positionAndVelocityErrors.header.stamp = odometry_msg->header.stamp;
-	      positionAndVelocityErrors_pub_.publish(positionAndVelocityErrors);
+	      positionAndVelocityErrors_pub_->publish(positionAndVelocityErrors);
 
 	      // Just for data plotting
 	      nav_msgs::msg::Odometry angularAndAngularVelocityErrors;
 	      position_controller_.GetAngularAndAngularVelocityErrors(&angularAndAngularVelocityErrors);
 	      angularAndAngularVelocityErrors.header.stamp = odometry_msg->header.stamp;
-	      angularAndAngularVelocityErrors_pub_.publish(angularAndAngularVelocityErrors);
+	      angularAndAngularVelocityErrors_pub_->publish(angularAndAngularVelocityErrors);
 
 	      // Just for data plotting
 	      nav_msgs::msg::Odometry filtered_errors;
@@ -384,7 +392,7 @@ void PositionControllerNode::OdometryCallback(const nav_msgs::msg::Odometry::Con
 	      filtered_errors.twist.twist.linear.z = odometry_filtered.twist.twist.linear.z - odometry_gt_.twist.twist.linear.z;
 
 	      filtered_errors.header.stamp = odometry_msg->header.stamp;
-	      filtered_errors_pub_.publish(filtered_errors);
+	      filtered_errors_pub_->publish(filtered_errors);
 
     }	 
 }

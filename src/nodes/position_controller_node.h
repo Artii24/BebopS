@@ -22,6 +22,7 @@
 #include <boost/bind.hpp>
 #include <Eigen/Eigen>
 #include <stdio.h>
+#include <functional>
 
 #include <geometry_msgs/msg/pose_stamped.hpp>
 #include <mav_msgs/msg/actuators.hpp>
@@ -34,7 +35,7 @@
 
 #include "bebop_simulator_r2/common.h"
 #include "bebop_simulator_r2/position_controller.h"
-#include "bebop_simulator_r2/parameters_rclcpp.h"
+#include "bebop_simulator_r2/parameters_ros.h"
 #include "bebop_simulator_r2/parameters.h"
 
 namespace bebop_simulator {
@@ -59,26 +60,26 @@ namespace bebop_simulator {
 
             //subscribers
 
-            rclcpp::Subscription<trajectory_msgs::msg::MultiDOFJointTrajectory> cmd_multi_dof_joint_trajectory_sub_;
-            rclcpp::Subscription<nav_msgs::msg::Odometry::ConstPtr> odometry_sub_;
-            rclcpp::Subscription<nav_msgs::msg::Odometry::ConstPtr> odometry_sub_gt_;
+            rclcpp::Subscription<trajectory_msgs::msg::MultiDOFJointTrajectory>::SharedPtr  cmd_multi_dof_joint_trajectory_sub_;
+            rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr  odometry_sub_;
+            rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr  odometry_sub_gt_;
 
             //publisher
-            rclcpp::Publisher<mav_msgs::msg::Actuators> motor_velocity_reference_pub_;
-            rclcpp::Publisher<nav_msgs::msg::Odometry> odometry_filtered_pub_;
-            rclcpp::Publisher<nav_msgs::msg::Odometry> filtered_errors_pub_;
-            rclcpp::Publisher<nav_msgs::msg::Odometry> reference_angles_pub_;
-            rclcpp::Publisher<nav_msgs::msg::Odometry> smoothed_reference_pub_;
-            rclcpp::Publisher<nav_msgs::msg::Odometry> uTerr_components_pub_;
-            rclcpp::Publisher<nav_msgs::msg::Odometry> zVelocity_components_pub_;
-            rclcpp::Publisher<nav_msgs::msg::Odometry> positionAndVelocityErrors_pub_;
-            rclcpp::Publisher<nav_msgs::msg::Odometry> angularAndAngularVelocityErrors_pub_;
+            rclcpp::Publisher<mav_msgs::msg::Actuators>::SharedPtr motor_velocity_reference_pub_;
+            rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr  odometry_filtered_pub_;
+            rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr  filtered_errors_pub_;
+            rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr  reference_angles_pub_;
+            rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr  smoothed_reference_pub_;
+            rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr  uTerr_components_pub_;
+            rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr  zVelocity_components_pub_;
+            rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr  positionAndVelocityErrors_pub_;
+            rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr  angularAndAngularVelocityErrors_pub_;
 
             nav_msgs::msg::Odometry odometry_gt_;
 
-            void MultiDofJointTrajectoryCallback(const trajectory_msgs::msg::MultiDOFJointTrajectory::ConstPtr& trajectory_reference_msg);
-            void OdometryGTCallback(const nav_msgs::msg::Odometry::ConstPtr& odometry_msg_gt);
-            void OdometryCallback(const nav_msgs::msg::Odometry::ConstPtr& odometry_msg);
+            void MultiDofJointTrajectoryCallback(const trajectory_msgs::msg::MultiDOFJointTrajectory::SharedPtr trajectory_reference_msg);
+            void OdometryGTCallback(const nav_msgs::msg::Odometry::SharedPtr odometry_msg_gt);
+            void OdometryCallback(const nav_msgs::msg::Odometry::SharedPtr odometry_msg);
 
 
     };

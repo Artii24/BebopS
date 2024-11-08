@@ -122,7 +122,7 @@ class PositionControllerParameters {
 
             //Launch file parameters
             std::string user_;
-            const int64_t dataStoringTime_;
+            int64_t dataStoringTime_;
             bool dataStoring_active_;
             bool waypointFilter_active_;
             bool EKF_active_;

@@ -116,7 +116,7 @@ void ExtendedKalmanFilter::Estimator(state_t *state_, EigenOdometry* odometry_){
 }
 
 // The function uses the Kalman filter output when noise is in the loop
-void ExtendedKalmanFilter::EstimatorWithNoise(state_t *state_, EigenOdometry* odometry_, nav_msgs::Odometry* odometry_filtered){
+void ExtendedKalmanFilter::EstimatorWithNoise(state_t *state_, EigenOdometry* odometry_, nav_msgs::msg::Odometry* odometry_filtered){
    assert(state_);
    assert(odometry_);
 
@@ -146,7 +146,7 @@ void ExtendedKalmanFilter::EstimatorWithNoise(state_t *state_, EigenOdometry* od
 }
 
 // When there is noise in the loop
-void ExtendedKalmanFilter::EstimatorWithoutNoise(state_t *state_, EigenOdometry* odometry_, nav_msgs::Odometry* odometry_filtered){
+void ExtendedKalmanFilter::EstimatorWithoutNoise(state_t *state_, EigenOdometry* odometry_, nav_msgs::msg::Odometry* odometry_filtered){
    assert(state_);
    assert(odometry_);
 
