@@ -130,7 +130,11 @@ target_compile_features(position_controller_node PUBLIC c_std_99 cxx_std_17)  # 
 
 install(TARGETS position_controller_node
   DESTINATION lib/${PROJECT_NAME})
-
+# Install launch files.
+install(DIRECTORY
+  launch
+  DESTINATION share/${PROJECT_NAME}/
+)
 
 # ament_export_dependencies(
 #   rclcpp
