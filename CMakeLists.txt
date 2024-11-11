@@ -24,6 +24,9 @@ include_directories(/usr/include/eigen3)
 # Install launch files.
 install(DIRECTORY
   launch
+  urdf
+  worlds
+  meshes
   DESTINATION share/${PROJECT_NAME}/
 )
 
