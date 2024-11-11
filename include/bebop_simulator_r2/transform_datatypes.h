@@ -205,29 +205,29 @@ static inline void quaternionStampedTFToMsg(const Stamped<Quaternion>& bt, geome
 {quaternionTFToMsg(bt, msg.quaternion); msg.header.stamp = bt.stamp_; msg.header.frame_id = bt.frame_id_;};
 
 /** \brief convert Vector3 msg to Vector3 */
-static inline void vector3MsgToTF(const geometry_msgs::msg::Vector3& msg_v, Vector3& bt_v) {bt_v = Vector3(msg_v.x, msg_v.y, msg_v.z);};
+static inline void vector3MsgToTF(const geometry_msgs::msg::Vector3& msg_v, Vector3& bt_v) {bt_v = Vector3(msg_v.x, msg_v.y, msg_v.z);}
 /** \brief convert Vector3 to Vector3 msg*/
-static inline void vector3TFToMsg(const Vector3& bt_v, geometry_msgs::msg::Vector3& msg_v) {msg_v.x = bt_v.x(); msg_v.y = bt_v.y(); msg_v.z = bt_v.z();};
+static inline void vector3TFToMsg(const Vector3& bt_v, geometry_msgs::msg::Vector3& msg_v) {msg_v.x = bt_v.x(); msg_v.y = bt_v.y(); msg_v.z = bt_v.z();}
 
 /** \brief convert Vector3Stamped msg to Stamped<Vector3> */
 static inline void vector3StampedMsgToTF(const geometry_msgs::msg::Vector3Stamped & msg, Stamped<Vector3>& bt)
-{vector3MsgToTF(msg.vector, bt); bt.stamp_ = msg.header.stamp; bt.frame_id_ = msg.header.frame_id;};
+{vector3MsgToTF(msg.vector, bt); bt.stamp_ = msg.header.stamp; bt.frame_id_ = msg.header.frame_id;}
 /** \brief convert Stamped<Vector3> to Vector3Stamped msg*/
 static inline void vector3StampedTFToMsg(const Stamped<Vector3>& bt, geometry_msgs::msg::Vector3Stamped & msg)
-{vector3TFToMsg(bt, msg.vector); msg.header.stamp = bt.stamp_; msg.header.frame_id = bt.frame_id_;};
+{vector3TFToMsg(bt, msg.vector); msg.header.stamp = bt.stamp_; msg.header.frame_id = bt.frame_id_;}
 
 
 /** \brief convert Point msg to Point */
-static inline void pointMsgToTF(const geometry_msgs::msg::Point& msg_v, Point& bt_v) {bt_v = Vector3(msg_v.x, msg_v.y, msg_v.z);};
+static inline void pointMsgToTF(const geometry_msgs::msg::Point& msg_v, Point& bt_v) {bt_v = Vector3(msg_v.x, msg_v.y, msg_v.z);}
 /** \brief convert Point to Point msg*/
-static inline void pointTFToMsg(const Point& bt_v, geometry_msgs::msg::Point& msg_v) {msg_v.x = bt_v.x(); msg_v.y = bt_v.y(); msg_v.z = bt_v.z();};
+static inline void pointTFToMsg(const Point& bt_v, geometry_msgs::msg::Point& msg_v) {msg_v.x = bt_v.x(); msg_v.y = bt_v.y(); msg_v.z = bt_v.z();}
 
 /** \brief convert PointStamped msg to Stamped<Point> */
 static inline void pointStampedMsgToTF(const geometry_msgs::msg::PointStamped & msg, Stamped<Point>& bt)
-{pointMsgToTF(msg.point, bt); bt.stamp_ = msg.header.stamp; bt.frame_id_ = msg.header.frame_id;};
+{pointMsgToTF(msg.point, bt); bt.stamp_ = msg.header.stamp; bt.frame_id_ = msg.header.frame_id;}
 /** \brief convert Stamped<Point> to PointStamped msg*/
 static inline void pointStampedTFToMsg(const Stamped<Point>& bt, geometry_msgs::msg::PointStamped & msg)
-{pointTFToMsg(bt, msg.point); msg.header.stamp = bt.stamp_; msg.header.frame_id = bt.frame_id_;};
+{pointTFToMsg(bt, msg.point); msg.header.stamp = bt.stamp_; msg.header.frame_id = bt.frame_id_;}
 
 
 /** \brief convert Transform msg to Transform */
@@ -235,7 +235,7 @@ static inline void transformMsgToTF(const geometry_msgs::msg::Transform& msg, Tr
 {bt = Transform(tf2::Quaternion(msg.rotation.x, msg.rotation.y, msg.rotation.z, msg.rotation.w), Vector3(msg.translation.x, msg.translation.y, msg.translation.z));};
 /** \brief convert Transform to Transform msg*/
 static inline void transformTFToMsg(const Transform& bt, geometry_msgs::msg::Transform& msg)
-{vector3TFToMsg(bt.getOrigin(), msg.translation);  quaternionTFToMsg(bt.getRotation(), msg.rotation);};
+{vector3TFToMsg(bt.getOrigin(), msg.translation);  quaternionTFToMsg(bt.getRotation(), msg.rotation);}
 
 /** \brief convert TransformStamped msg to tf2::StampedTransform */
 static inline void transformStampedMsgToTF(const geometry_msgs::msg::TransformStamped & msg, StampedTransform& bt)
@@ -249,14 +249,14 @@ static inline void poseMsgToTF(const geometry_msgs::msg::Pose& msg, Pose& bt)
 {bt = Transform(Quaternion(msg.orientation.x, msg.orientation.y, msg.orientation.z, msg.orientation.w), Vector3(msg.position.x, msg.position.y, msg.position.z));};
 /** \brief convert Pose to Pose msg*/
 static inline void poseTFToMsg(const Pose& bt, geometry_msgs::msg::Pose& msg)
-{pointTFToMsg(bt.getOrigin(), msg.position);  quaternionTFToMsg(bt.getRotation(), msg.orientation);};
+{pointTFToMsg(bt.getOrigin(), msg.position);  quaternionTFToMsg(bt.getRotation(), msg.orientation);}
 
 /** \brief convert PoseStamped msg to Stamped<Pose> */
 static inline void poseStampedMsgToTF(const geometry_msgs::msg::PoseStamped & msg, Stamped<Pose>& bt)
-{poseMsgToTF(msg.pose, bt); bt.stamp_ = msg.header.stamp; bt.frame_id_ = msg.header.frame_id;};
+{poseMsgToTF(msg.pose, bt); bt.stamp_ = msg.header.stamp; bt.frame_id_ = msg.header.frame_id;}
 /** \brief convert Stamped<Pose> to PoseStamped msg*/
 static inline void poseStampedTFToMsg(const Stamped<Pose>& bt, geometry_msgs::msg::PoseStamped & msg)
-{poseTFToMsg(bt, msg.pose); msg.header.stamp = bt.stamp_; msg.header.frame_id = bt.frame_id_;};
+{poseTFToMsg(bt, msg.pose); msg.header.stamp = bt.stamp_; msg.header.frame_id = bt.frame_id_;}
 
 
 

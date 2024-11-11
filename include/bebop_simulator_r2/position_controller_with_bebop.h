@@ -24,7 +24,7 @@
 #include <string>
 
 #include "builtin_interfaces/msg/time.hpp"
-#include <std_msgs/msg/Empty.hpp>
+#include <std_msgs/msg/empty.hpp>
 
 #include "extendedKalmanFilter.h"
 #include "stabilizer_types.h"
@@ -92,16 +92,16 @@ class PositionControllerParameters {
         public:
             PositionControllerWithBebop();
             ~PositionControllerWithBebop();
-            void CalculateCommandSignals(geometry_msgs::Twist* ref_command_signals);
+            void CalculateCommandSignals(geometry_msgs::msg::Twist* ref_command_signals);
 
             void SetOdom(const EigenOdometry& odometry);
             void SetTrajectoryPoint();
             void SetControllerGains();
             void SetVehicleParameters();
             void SetFilterParameters();
-            void GetOdometry(nav_msgs::Odometry* odometry_filtered);
-            void GetReferenceAngles(nav_msgs::Odometry* reference_angles);
-            void GetTrajectory(nav_msgs::Odometry* smoothed_trajectory);
+            void GetOdometry(nav_msgs::msg::Odometry* odometry_filtered);
+            void GetReferenceAngles(nav_msgs::msg::Odometry* reference_angles);
+            void GetTrajectory(nav_msgs::msg::Odometry* smoothed_trajectory);
             
             PositionControllerParameters controller_parameters_;
             ExtendedKalmanFilter extended_kalman_filter_bebop_;
@@ -116,8 +116,8 @@ class PositionControllerParameters {
             bool stateEmergency_;
 
             //publisher
-            ros::Publisher land_pub_;
-            ros::Publisher reset_pub_;
+            rclcpp::Publisher<std_msgs::msg::Empty>::SharedPtr land_pub_;
+            rclcpp::Publisher<std_msgs::msg::Empty>::SharedPtr reset_pub_;
           
             //Controller gains
             double beta_x_, beta_y_, beta_z_;
@@ -156,20 +156,20 @@ class PositionControllerParameters {
             //Controller interface with Bebop paramters
             double e_z_sum_, vel_command_;
             
-            ros::NodeHandle n1_;
-            ros::NodeHandle n2_;
-            ros::NodeHandle n3_;
-            ros::NodeHandle n4_;
-            rclcpp::Timer timer1_;
-            rclcpp::Timer timer2_;
-            rclcpp::Timer timer3_;
+            rclcpp::Node::SharedPtr n1_;
+            rclcpp::Node::SharedPtr n2_;
+            rclcpp::Node::SharedPtr n3_;
+            rclcpp::Node::SharedPtr n4_;
+            rclcpp::TimerBase::SharedPtr timer1_;
+            rclcpp::TimerBase::SharedPtr timer2_;
+            rclcpp::TimerBase::SharedPtr timer3_;
 
             //Callback functions to compute the errors among axis and angles
-            void CallbackAttitude(const rclcpp::TimerEvent& event);
-            void CallbackPosition(const rclcpp::TimerEvent& event);
-            void CallbackLand(const rclcpp::TimerEvent& event);
+            void CallbackAttitude();
+            void CallbackPosition();
+            void CallbackLand();
 
-            nav_msgs::Odometry odometry_filtered_private_;
+            nav_msgs::msg::Odometry odometry_filtered_private_;
 
 	        state_t state_;
             control_t control_;

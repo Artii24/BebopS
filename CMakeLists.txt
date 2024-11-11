@@ -18,9 +18,15 @@ find_package(sensor_msgs REQUIRED)
 find_package(trajectory_msgs REQUIRED)
 
 find_package(
-  Eigen3 REQUIRED
+  Eigen3 REQUIRED HINTS ${Eigen3_HINT}
 )
-# include_directories(SYSTEM ${EIGEN3_INCLUDE_DIRS})
+include_directories(/usr/include/eigen3)
+# Install launch files.
+install(DIRECTORY
+  launch
+  DESTINATION share/${PROJECT_NAME}/
+)
+
 # add libraries
 add_library(${PROJECT_NAME}_lib SHARED
    src/library/position_controller.cpp
@@ -71,14 +77,14 @@ ament_export_targets(export_${PROJECT_NAME}_lib HAS_LIBRARY_TARGET)
 # ament_export_targets(export_position_controller_with_bebop HAS_LIBRARY_TARGET)
 ament_export_dependencies(
   rclcpp
-  Eigen3
+  # Eigen3::Eigen
 )
 target_link_libraries(${PROJECT_NAME}_lib
-Eigen3
+Eigen3::Eigen
 
 )
 target_link_libraries(position_controller_with_bebop
-Eigen3
+Eigen3::Eigen
 ${PROJECT_NAME}_lib
 )
 
@@ -129,12 +135,8 @@ target_include_directories(position_controller_node PUBLIC
 target_compile_features(position_controller_node PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
 
 install(TARGETS position_controller_node
-  DESTINATION lib/${PROJECT_NAME})
-# Install launch files.
-install(DIRECTORY
-  launch
-  DESTINATION share/${PROJECT_NAME}/
-)
+  DESTINATION lib/${PROJECT_NAME}/)
+
 
 # ament_export_dependencies(
 #   rclcpp

@@ -38,12 +38,12 @@
 
 #include <nav_msgs/msg/odometry.h>
 #include <rclcpp/logging.hpp>
-#include <std_msgs/Empty.h>
+#include <std_msgs/msg/empty.h>
 
 
 #define M_PI                      3.14159265358979323846  /* pi */
-#define TsP                       10e-3  /* Position control sampling time */
-#define TsA                       5e-3 /* Attitude control sampling time */
+#define TsP                       10/*e-3   Position control sampling time */
+#define TsA                       5/*e-3  Attitude control sampling time */
 #define TsE                           5 /* Refresh landing time*/
 
 #define MAX_TILT_ANGLE            20  /* Current tilt max in degree */
@@ -111,11 +111,17 @@ PositionControllerWithBebop::PositionControllerWithBebop()
             filter_parameters_.Rp_ = Eigen::MatrixXf::Zero(6,6);
             filter_parameters_.Qp_ = Eigen::MatrixXf::Identity(6,6);
 
-            land_pub_ = n4_.advertise<std_msgs::Empty>(bebop_msgs::default_topics::LAND, 1);
-            reset_pub_ = n4_.advertise<std_msgs::Empty>(bebop_msgs::default_topics::RESET, 1);
+            n1_=rclcpp::Node::make_shared("nh1");
+            n2_=rclcpp::Node::make_shared("nh2");
+            n3_=rclcpp::Node::make_shared("nh3");
+            n4_=rclcpp::Node::make_shared("nh4");
+            land_pub_ = n4_->create_publisher<std_msgs::msg::Empty>(bebop_msgs::default_topics::LAND,
+             1);
+            reset_pub_ = n4_->create_publisher<std_msgs::msg::Empty>(bebop_msgs::default_topics::RESET,
+             1);
 
-            timer1_ = n1_.createTimer(ros::Duration(TsA), &PositionControllerWithBebop::CallbackAttitude, this, false, true);
-            timer2_ = n2_.createTimer(ros::Duration(TsP), &PositionControllerWithBebop::CallbackPosition, this, false, true); 
+            timer1_ = n1_->create_wall_timer(std::chrono::duration<int64_t, std::milli>(TsA), std::bind(&PositionControllerWithBebop::CallbackAttitude,this));
+            timer2_ = n2_->create_wall_timer(std::chrono::duration<int64_t, std::milli>(TsP), std::bind(&PositionControllerWithBebop::CallbackPosition,this));
 
 }
 
@@ -207,7 +213,7 @@ void PositionControllerWithBebop::SetTrajectoryPoint() {
 
 }
 
-void PositionControllerWithBebop::GetTrajectory(nav_msgs::Odometry* smoothed_trajectory){
+void PositionControllerWithBebop::GetTrajectory(nav_msgs::msg::Odometry* smoothed_trajectory){
 
    smoothed_trajectory->pose.pose.position.x = command_trajectory_.position_W[0];
    smoothed_trajectory->pose.pose.position.y = command_trajectory_.position_W[1];
@@ -215,7 +221,7 @@ void PositionControllerWithBebop::GetTrajectory(nav_msgs::Odometry* smoothed_tra
 
 }
 
-void PositionControllerWithBebop::GetOdometry(nav_msgs::Odometry* odometry_filtered){
+void PositionControllerWithBebop::GetOdometry(nav_msgs::msg::Odometry* odometry_filtered){
 
    *odometry_filtered = odometry_filtered_private_;
 
@@ -228,7 +234,7 @@ void PositionControllerWithBebop::SetOdometryEstimated() {
 
 }
 
-void PositionControllerWithBebop::GetReferenceAngles(nav_msgs::Odometry* reference_angles){
+void PositionControllerWithBebop::GetReferenceAngles(nav_msgs::msg::Odometry* reference_angles){
     assert(reference_angles);
 
    reference_angles->pose.pose.position.x = control_.phiR*180/M_PI;
@@ -243,7 +249,7 @@ void PositionControllerWithBebop::GetReferenceAngles(nav_msgs::Odometry* referen
 
 }
 
-void PositionControllerWithBebop::CalculateCommandSignals(geometry_msgs::Twist* ref_command_signals) {
+void PositionControllerWithBebop::CalculateCommandSignals(geometry_msgs::msg::Twist* ref_command_signals) {
     assert(ref_command_signals);
     
     //this serves to inactivate the controller if we don't recieve a trajectory
@@ -315,17 +321,18 @@ void PositionControllerWithBebop::CommandVelocity(double* vel_command){
 void PositionControllerWithBebop::LandEmergency(){
 
     if(stateEmergency_){
-       std_msgs::Empty empty_msg;
-       land_pub_.publish(empty_msg);
+       std_msgs::msg::Empty empty_msg;
+       land_pub_->publish(empty_msg);
     }
 }
 
 void PositionControllerWithBebop::Emergency(){
 
     stateEmergency_ = true;
-    timer3_ = n3_.createTimer(ros::Duration(TsE), &PositionControllerWithBebop::CallbackLand, this, false, true); 
-    std_msgs::Empty empty_msg;
-    reset_pub_.publish(empty_msg);
+    timer3_ = n3_->create_wall_timer(std::chrono::duration<int64_t,std::milli>(TsE*1000),
+     std::bind(&PositionControllerWithBebop::CallbackLand, this)); 
+    std_msgs::msg::Empty empty_msg;
+    reset_pub_->publish(empty_msg);
 
 }
 
@@ -434,14 +441,14 @@ void PositionControllerWithBebop::AttitudeErrors(double* e_phi, double* e_theta,
 
 }
 
-void PositionControllerWithBebop::CallbackAttitude(const rclcpp::TimerEvent& event){
+void PositionControllerWithBebop::CallbackAttitude(){
      
      AttitudeErrors(&e_phi_, &e_theta_, &e_psi_);
      AngularVelocityErrors(&dot_e_phi_, &dot_e_theta_, &dot_e_psi_);
      
 }
 
-void PositionControllerWithBebop::CallbackPosition(const rclcpp::TimerEvent& event){
+void PositionControllerWithBebop::CallbackPosition(){
 
      waypoint_filter_.TrajectoryGeneration();
      SetTrajectoryPoint();
@@ -455,7 +462,7 @@ void PositionControllerWithBebop::CallbackPosition(const rclcpp::TimerEvent& eve
  
 }
 
-void PositionControllerWithBebop::CallbackLand(const rclcpp::TimerEvent& event){
+void PositionControllerWithBebop::CallbackLand(){
 
      LandEmergency();
    

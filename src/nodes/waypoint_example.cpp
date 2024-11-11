@@ -22,7 +22,7 @@
 #include <fstream>
 #include <iostream>
 
-#include <Eigen/Core>
+#include <eigen3/Eigen/Core>
 #include <mav_msgs/conversions.h>
 #include <mav_msgs/default_topics.h>
 #include "rclcpp/rclcpp.hpp"

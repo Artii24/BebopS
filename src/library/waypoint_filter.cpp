@@ -18,7 +18,7 @@
 
 #include "bebop_simulator_r2/waypoint_filter.h"
 
-#include <Eigen/Eigen>
+#include <eigen3/Eigen/Eigen>
 #include <chrono>
 #include <time.h>
 

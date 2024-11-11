@@ -23,7 +23,7 @@
 #include <math.h> 
 #include "rclcpp/rclcpp.hpp"
 #include <rclcpp/logging.hpp> 
-#include <Eigen/Eigen>
+#include <eigen3/Eigen/Eigen>
 #include <stdio.h>
 #include <boost/bind.hpp>
 

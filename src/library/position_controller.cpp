@@ -400,7 +400,8 @@ void PositionController::SetLaunchFileParameters(){
 
 		// Time after which the data storing function is turned on
 
-		timer3_ = n3_->create_wall_timer(std::chrono::duration<int64_t,std::milli>(dataStoringTime_), std::bind(&PositionController::CallbackSaveData,this));
+		timer3_ = n3_->create_wall_timer(std::chrono::duration<int64_t,std::milli>(dataStoringTime_),
+     std::bind(&PositionController::CallbackSaveData,this));
 
 		// Cleaning the string vector contents
 		listControlSignals_.clear();

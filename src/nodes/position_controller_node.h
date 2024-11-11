@@ -20,7 +20,7 @@
 #define BEBOP_CONTROL_POSITION_CONTROLLER_NODE_H
 
 #include <boost/bind.hpp>
-#include <Eigen/Eigen>
+#include <eigen3/Eigen/Eigen>
 #include <stdio.h>
 #include <functional>
 
@@ -50,7 +50,7 @@ namespace bebop_simulator {
 
         private:
             rclcpp::Node::SharedPtr nh_ = rclcpp::Node::make_shared("odometry");
-            rclcpp::Node::SharedPtr pnh_ = rclcpp::Node::make_shared("~");
+            rclcpp::Node::SharedPtr pnh_ = rclcpp::Node::make_shared("logger");
 
             bool waypointHasBeenPublished_ = false;
 

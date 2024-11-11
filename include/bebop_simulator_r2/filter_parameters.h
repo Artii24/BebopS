@@ -19,7 +19,7 @@
 #ifndef _FILTER_PARAMETERS_H_
 #define _FILTER_PARAMETERS_H_
 
-#include <Eigen/Eigen>
+#include <eigen3/Eigen/Eigen>
 #include "rclcpp/rclcpp.hpp"
 
 namespace bebop_simulator {

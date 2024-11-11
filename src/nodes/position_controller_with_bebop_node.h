@@ -20,7 +20,7 @@
 #define BEBOP_CONTROL_POSITION_CONTROLLER_NODE_H
 
 #include <boost/bind.hpp>
-#include <Eigen/Eigen>
+#include <eigen3/Eigen/Eigen>
 #include <stdio.h>
 
 #include <geometry_msgs/msg/PoseStamped.hpp>
