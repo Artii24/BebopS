@@ -30,7 +30,7 @@ def generate_launch_description():
     else:
         os.environ['GAZEBO_PLUGIN_PATH'] = install_dir + '/lib'
 
-    params={'radius': '0.9',
+    params_model={'radius': '0.9',
             'enable_ground_truth': 'true',
             'enable_odometry_sensor_with_noise': 'false',
             'disable_odometry_sensor_with_noise': 'true',
@@ -50,29 +50,36 @@ def generate_launch_description():
             'z': '0.31',
             'model': 'bebop'
             }
-    robot_description_config = xacro.process_file(xacro_file, mappings=params)
+    param_launch = {'user_account' :"artem",
+        'waypoint_filter' :"true",
+        'EKFActive' :"false",
+        'csvFilesStoring' :"false",
+        'csvFilesStoringTime':"60.0"}
+    robot_description_config = xacro.process_file(xacro_file, mappings=params_model)
     robot_desc = robot_description_config.toxml()
 
-    print(robot_desc)
+    # print(robot_desc)
     
-    start_steering_control = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            os.path.join(pkg_box_car_description, 'launch', 'steering_control.launch.py'),
-        )
-    ) 
+    # start_steering_control = IncludeLaunchDescription(
+    #     PythonLaunchDescriptionSource(
+    #         os.path.join(pkg_box_car_description, 'launch', 'steering_control.launch.py'),
+    #     )
+    # ) 
 
     return LaunchDescription([
         DeclareLaunchArgument(
             'use_sim_time',
             default_value='false',
             description='Use simulation (Gazebo) clock if true'),
-        Node(package='bebop_simulator_r2', executable='position_controller_node', arguments=[robot_desc], output='screen'),
+        # Node(package='bebop_simulator_r2', executable='position_controller_node', arguments=["--ros-args",param_launch], output='screen',
+        #      parameters=[
+        #         ]),
         Node(
             package="robot_state_publisher",
             executable="robot_state_publisher",
             name="robot_state_publisher",
-            parameters=[
-                {"robot_description": robot_desc}],
-            output="screen"),
+            parameters=[{'robot_description': robot_desc}
+            ],
+            output='both'),
         #start_steering_control,
     ])

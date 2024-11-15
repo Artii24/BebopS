@@ -32,7 +32,7 @@ PositionControllerNode::PositionControllerNode() {
 
     
    
-    RCLCPP_INFO_ONCE(nh_->get_logger(), "Started position controller");
+    RCLCPP_INFO_ONCE(pnh_->get_logger(), "Started position controller");
     //The vehicle and controller parameters are initialized
     InitializeParams();
     //To get the trajectory to follow
@@ -248,39 +248,39 @@ void PositionControllerNode::InitializeParams() {
   std::string user;
 
   if (pnh_->get_parameter("user_account", user)){
-	  RCLCPP_INFO(nh_->get_logger(), "Got param 'user_account': %s", user.c_str());
+	  RCLCPP_INFO(pnh_->get_logger(), "Got param 'user_account': %s", user.c_str());
 	  position_controller_.user_ = user;
   }
   else
-      RCLCPP_ERROR(nh_->get_logger(), "Failed to get param 'user'");
+      RCLCPP_ERROR(pnh_->get_logger(), "Failed to get param 'user'");
 
   if (pnh_->get_parameter("waypoint_filter", waypointFilterActive)){
-    RCLCPP_INFO(nh_->get_logger(), "Got param 'waypoint_filter': %d", waypointFilterActive);
+    RCLCPP_INFO(pnh_->get_logger(), "Got param 'waypoint_filter': %d", waypointFilterActive);
     position_controller_.waypointFilter_active_ = waypointFilterActive;
   }
   else
-      RCLCPP_ERROR(nh_->get_logger(), "Failed to get param 'waypoint_filter'");
+      RCLCPP_ERROR(pnh_->get_logger(), "Failed to get param 'waypoint_filter'");
 
   if (pnh_->get_parameter("csvFilesStoring", dataStoringActive)){
-	  RCLCPP_INFO(nh_->get_logger(), "Got param 'csvFilesStoring': %d", dataStoringActive);
+	  RCLCPP_INFO(pnh_->get_logger(), "Got param 'csvFilesStoring': %d", dataStoringActive);
 	  position_controller_.dataStoring_active_ = dataStoringActive;
   }
   else
-      RCLCPP_ERROR(nh_->get_logger(), "Failed to get param 'csvFilesStoring'");
+      RCLCPP_ERROR(pnh_->get_logger(), "Failed to get param 'csvFilesStoring'");
 
   if (pnh_->get_parameter("EKFActive", EKFActive)){
-    RCLCPP_INFO(nh_->get_logger(), "Got param 'EKFActive': %d", EKFActive);
+    RCLCPP_INFO(pnh_->get_logger(), "Got param 'EKFActive': %d", EKFActive);
     position_controller_.EKF_active_ = EKFActive;
   }
   else
-      RCLCPP_ERROR(nh_->get_logger(), "Failed to get param 'EKFActive'");
+      RCLCPP_ERROR(pnh_->get_logger(), "Failed to get param 'EKFActive'");
 
   if (pnh_->get_parameter("csvFilesStoringTime", dataStoringTime)){
-	  RCLCPP_INFO(nh_->get_logger(), "Got param 'csvFilesStoringTime': %f", dataStoringTime);
+	  RCLCPP_INFO(pnh_->get_logger(), "Got param 'csvFilesStoringTime': %f", dataStoringTime);
 	  position_controller_.dataStoringTime_ = dataStoringTime;
   }
   else
-      RCLCPP_ERROR(nh_->get_logger(), "Failed to get param 'csvFilesStoringTime'");
+      RCLCPP_ERROR(pnh_->get_logger(), "Failed to get param 'csvFilesStoringTime'");
 
   position_controller_.SetLaunchFileParameters();
 

@@ -16,7 +16,7 @@
 
   <!-- Instantiate bebop "mechanics" -->
   	<xacro:include filename="$(find bebop_simulator_r2)/urdf/bebop_base.urdf.xacro" />
-  	<xacro:include filename="$(find rotors_description)/urdf/component_snippets.xacro" />
+  	<xacro:include filename="/workspace/ros2_ws/src/rotors_simulator/rotors_description/urdf/component_snippets.xacro" />
 
   	<!-- Realistic odometry sensor with noise and bias -->
         <xacro:if value="$(arg enable_odometry_sensor_with_noise)">

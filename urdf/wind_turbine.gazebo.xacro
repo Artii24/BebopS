@@ -19,6 +19,6 @@
 
   <!-- Instantiate mmuav "mechanics" -->
   <xacro:include filename="$(find bebop_simulator_r2)/urdf/wind_turbine.base.urdf.xacro" />
-  <xacro:include filename="$(find rotors_description)/urdf/component_snippets.xacro" />
+  <xacro:include filename="$/workspace/ros2_ws/src/rotors_simulator/rotors_description/urdf/component_snippets.xacro" />
 
 </robot>
