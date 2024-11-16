@@ -112,7 +112,11 @@ install(
   INCLUDES DESTINATION include
 
   )
-
+  install(
+    PROGRAMS
+    launch/spawn_bebop.py
+    DESTINATION lib/${PROJECT_NAME}
+  )
 # Add exe, nodes
 add_executable(position_controller_node 
   src/nodes/position_controller_node.cpp

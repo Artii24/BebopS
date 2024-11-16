@@ -129,19 +129,19 @@ def generate_launch_description():
     x_pose = LaunchConfiguration('x_pose', default='0.0')
     y_pose = LaunchConfiguration('y_pose', default='0.0')
     z_pose = LaunchConfiguration('z_pose', default='0.01')
-
-    start_gazebo_ros_spawner_cmd = Node(
-        package='gazebo_ros',
-        executable='spawn_entity.py',
-        arguments=[
-            '-entity', "robot",
-            '-file', robot_desc,
-            '-x', x_pose,
-            '-y', y_pose,
-            '-z', z_pose
-        ],
-        output='screen',
-    )
+    spawn_bebop_cmd = Node(package='bebop_simulator_r2', executable='spawn_bebop.py', arguments=[robot_desc], output='screen')
+    # start_gazebo_ros_spawner_cmd = Node(
+    #     package='gazebo_ros',
+    #     executable='spawn_entity.py',
+    #     arguments=[
+    #         '-entity', "robot",
+    #         '-file', robot_description_config,
+    #         '-x', x_pose,
+    #         '-y', y_pose,
+    #         '-z', z_pose
+    #     ],
+    #     output='screen',
+    # )
     ld =LaunchDescription()
     # Declare the launch options
     ld.add_action(declare_time_cmd)
@@ -152,9 +152,9 @@ def generate_launch_description():
     ld.add_action(declare_csvFilesStoringTime_cmd)   
     
     # Add the commands to the launch description
-    ld.add_action(gzserver_cmd)
+    # ld.add_action(gzserver_cmd)
     ld.add_action(gzclient_cmd)
     ld.add_action(robot_state_publisher_cmd)
-    ld.add_action(start_gazebo_ros_spawner_cmd)
+    ld.add_action(spawn_bebop_cmd)
     # ld.add_action(postion_contrl_cmd)
     return ld
