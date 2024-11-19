@@ -50,7 +50,8 @@ namespace bebop_simulator {
 
         private:
             rclcpp::Node::SharedPtr nh_ = rclcpp::Node::make_shared("odometry");
-            rclcpp::Node::SharedPtr pnh_ = rclcpp::Node::make_shared("logger");
+            rclcpp::Node::SharedPtr lnh_ = rclcpp::Node::make_shared("logger");
+            rclcpp::Node::SharedPtr pnh_ = rclcpp::Node::make_shared("parameter");
 
             bool waypointHasBeenPublished_ = false;
 

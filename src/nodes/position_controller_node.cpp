@@ -32,7 +32,7 @@ PositionControllerNode::PositionControllerNode() {
 
     
    
-    RCLCPP_INFO_ONCE(pnh_->get_logger(), "Started position controller");
+    RCLCPP_INFO_ONCE(lnh_->get_logger(), "Started position controller");
     //The vehicle and controller parameters are initialized
     InitializeParams();
     //To get the trajectory to follow
@@ -102,6 +102,7 @@ void PositionControllerNode::MultiDofJointTrajectoryCallback(const trajectory_ms
     waypointHasBeenPublished_ = true;
     RCLCPP_INFO_ONCE(nh_->get_logger(), "PositionController got first MultiDOFJointTrajectory message.");
   }
+  
 }
 
 void PositionControllerNode::InitializeParams() {
@@ -109,114 +110,114 @@ void PositionControllerNode::InitializeParams() {
 
   // Read parameters from rosparam. The parameters are read by the YAML file and they
   // are used to create the "controller_parameters_" object
-  GetRosParameter(pnh_, "beta_xy/beta_x",
+  GetRosParameter(lnh_, "beta_xy/beta_x",
                   position_controller_.controller_parameters_.beta_xy_.x(),
                   &position_controller_.controller_parameters_.beta_xy_.x());
-  GetRosParameter(pnh_, "beta_xy/beta_y",
+  GetRosParameter(lnh_, "beta_xy/beta_y",
                   position_controller_.controller_parameters_.beta_xy_.y(),
                   &position_controller_.controller_parameters_.beta_xy_.y());
-  GetRosParameter(pnh_, "beta_z/beta_z",
+  GetRosParameter(lnh_, "beta_z/beta_z",
                   position_controller_.controller_parameters_.beta_z_,
                   &position_controller_.controller_parameters_.beta_z_);
   
-  GetRosParameter(pnh_, "beta_phi/beta_phi",
+  GetRosParameter(lnh_, "beta_phi/beta_phi",
                   position_controller_.controller_parameters_.beta_phi_,
                   &position_controller_.controller_parameters_.beta_phi_);
-  GetRosParameter(pnh_, "beta_theta/beta_theta",
+  GetRosParameter(lnh_, "beta_theta/beta_theta",
                   position_controller_.controller_parameters_.beta_theta_,
                   &position_controller_.controller_parameters_.beta_theta_);
-  GetRosParameter(pnh_, "beta_psi/beta_psi",
+  GetRosParameter(lnh_, "beta_psi/beta_psi",
                   position_controller_.controller_parameters_.beta_psi_,
                   &position_controller_.controller_parameters_.beta_psi_);
 
-  GetRosParameter(pnh_, "mu_xy/mu_x",
+  GetRosParameter(lnh_, "mu_xy/mu_x",
                   position_controller_.controller_parameters_.mu_xy_.x(),
                   &position_controller_.controller_parameters_.mu_xy_.x());
-  GetRosParameter(pnh_, "mu_xy/mu_y",
+  GetRosParameter(lnh_, "mu_xy/mu_y",
                   position_controller_.controller_parameters_.mu_xy_.y(),
                   &position_controller_.controller_parameters_.mu_xy_.y());
-  GetRosParameter(pnh_, "mu_z/mu_z",
+  GetRosParameter(lnh_, "mu_z/mu_z",
                   position_controller_.controller_parameters_.mu_z_,
                   &position_controller_.controller_parameters_.mu_z_);
   
-  GetRosParameter(pnh_, "mu_phi/mu_phi",
+  GetRosParameter(lnh_, "mu_phi/mu_phi",
                   position_controller_.controller_parameters_.mu_phi_,
                   &position_controller_.controller_parameters_.mu_phi_);
-  GetRosParameter(pnh_, "mu_theta/mu_theta",
+  GetRosParameter(lnh_, "mu_theta/mu_theta",
                   position_controller_.controller_parameters_.mu_theta_,
                   &position_controller_.controller_parameters_.mu_theta_);
-  GetRosParameter(pnh_, "mu_psi/mu_psi",
+  GetRosParameter(lnh_, "mu_psi/mu_psi",
                   position_controller_.controller_parameters_.mu_psi_,
                   &position_controller_.controller_parameters_.mu_psi_);
 				  
-  GetRosParameter(pnh_, "U_xyz/U_x",
+  GetRosParameter(lnh_, "U_xyz/U_x",
                   position_controller_.controller_parameters_.U_q_.x(),
                   &position_controller_.controller_parameters_.U_q_.x());
-  GetRosParameter(pnh_, "U_xyz/U_y",
+  GetRosParameter(lnh_, "U_xyz/U_y",
                   position_controller_.controller_parameters_.U_q_.y(),
                   &position_controller_.controller_parameters_.U_q_.y());
-  GetRosParameter(pnh_, "U_xyz/U_z",
+  GetRosParameter(lnh_, "U_xyz/U_z",
                   position_controller_.controller_parameters_.U_q_.z(),
                   &position_controller_.controller_parameters_.U_q_.z());
 
   //Analogously, the object "vehicle_parameters_" is created
-  GetVehicleParameters(pnh_, &position_controller_.vehicle_parameters_);
+  GetVehicleParameters(lnh_, &position_controller_.vehicle_parameters_);
 
   //Waypoint Filter parameters
-  GetRosParameter(pnh_, "Tsf",
+  GetRosParameter(lnh_, "Tsf",
                   position_controller_.waypoint_filter_parameters_.tsf_,
                   &position_controller_.waypoint_filter_parameters_.tsf_);
 
-  GetRosParameter(pnh_, "H",
+  GetRosParameter(lnh_, "H",
                   position_controller_.waypoint_filter_parameters_.h_,
                   &position_controller_.waypoint_filter_parameters_.h_);
 
   //The object "filter_parameters_"
-  GetRosParameter(pnh_, "dev_x",
+  GetRosParameter(lnh_, "dev_x",
                   position_controller_.filter_parameters_.dev_x_,
                   &position_controller_.filter_parameters_.dev_x_);
    
-  GetRosParameter(pnh_, "dev_y",
+  GetRosParameter(lnh_, "dev_y",
                   position_controller_.filter_parameters_.dev_y_,
                   &position_controller_.filter_parameters_.dev_y_);
 
-  GetRosParameter(pnh_, "dev_z",
+  GetRosParameter(lnh_, "dev_z",
                   position_controller_.filter_parameters_.dev_z_,
                   &position_controller_.filter_parameters_.dev_z_);
 
-  GetRosParameter(pnh_, "dev_vx",
+  GetRosParameter(lnh_, "dev_vx",
                   position_controller_.filter_parameters_.dev_vx_,
                   &position_controller_.filter_parameters_.dev_vx_);
 
-  GetRosParameter(pnh_, "dev_vy",
+  GetRosParameter(lnh_, "dev_vy",
                   position_controller_.filter_parameters_.dev_vy_,
                   &position_controller_.filter_parameters_.dev_vy_);
 
-  GetRosParameter(pnh_, "dev_vz",
+  GetRosParameter(lnh_, "dev_vz",
                   position_controller_.filter_parameters_.dev_vz_,
                   &position_controller_.filter_parameters_.dev_vz_);
 
-  GetRosParameter(pnh_, "Qp/aa",
+  GetRosParameter(lnh_, "Qp/aa",
                   position_controller_.filter_parameters_.Qp_x_,
                   &position_controller_.filter_parameters_.Qp_x_);
    
-  GetRosParameter(pnh_, "Qp/bb",
+  GetRosParameter(lnh_, "Qp/bb",
                   position_controller_.filter_parameters_.Qp_y_,
                   &position_controller_.filter_parameters_.Qp_y_);
 
-  GetRosParameter(pnh_, "Qp/cc",
+  GetRosParameter(lnh_, "Qp/cc",
                   position_controller_.filter_parameters_.Qp_z_,
                   &position_controller_.filter_parameters_.Qp_z_);
 
-  GetRosParameter(pnh_, "Qp/dd",
+  GetRosParameter(lnh_, "Qp/dd",
                   position_controller_.filter_parameters_.Qp_vx_,
                   &position_controller_.filter_parameters_.Qp_vx_);
 
-  GetRosParameter(pnh_, "Qp/ee",
+  GetRosParameter(lnh_, "Qp/ee",
                   position_controller_.filter_parameters_.Qp_vy_,
                   &position_controller_.filter_parameters_.Qp_vy_);
 
-  GetRosParameter(pnh_, "Qp/ff",
+  GetRosParameter(lnh_, "Qp/ff",
                   position_controller_.filter_parameters_.Qp_vz_,
                   &position_controller_.filter_parameters_.Qp_vz_);
 
@@ -246,41 +247,41 @@ void PositionControllerNode::InitializeParams() {
   bool EKFActive;
   int64_t dataStoringTime;
   std::string user;
-
-  if (pnh_->get_parameter("user_account", user)){
-	  RCLCPP_INFO(pnh_->get_logger(), "Got param 'user_account': %s", user.c_str());
+  // pnh
+  if (lnh_->get_parameter("user_account", user)){
+	  RCLCPP_INFO(lnh_->get_logger(), "Got param 'user_account': %s", user.c_str());
 	  position_controller_.user_ = user;
   }
   else
-      RCLCPP_ERROR(pnh_->get_logger(), "Failed to get param 'user'");
+      RCLCPP_ERROR(lnh_->get_logger(), "Failed to get param 'user'");
 
-  if (pnh_->get_parameter("waypoint_filter", waypointFilterActive)){
-    RCLCPP_INFO(pnh_->get_logger(), "Got param 'waypoint_filter': %d", waypointFilterActive);
+  if (lnh_->get_parameter("waypoint_filter", waypointFilterActive)){
+    RCLCPP_INFO(lnh_->get_logger(), "Got param 'waypoint_filter': %d", waypointFilterActive);
     position_controller_.waypointFilter_active_ = waypointFilterActive;
   }
   else
-      RCLCPP_ERROR(pnh_->get_logger(), "Failed to get param 'waypoint_filter'");
+      RCLCPP_ERROR(lnh_->get_logger(), "Failed to get param 'waypoint_filter'");
 
-  if (pnh_->get_parameter("csvFilesStoring", dataStoringActive)){
-	  RCLCPP_INFO(pnh_->get_logger(), "Got param 'csvFilesStoring': %d", dataStoringActive);
+  if (lnh_->get_parameter("csvFilesStoring", dataStoringActive)){
+	  RCLCPP_INFO(lnh_->get_logger(), "Got param 'csvFilesStoring': %d", dataStoringActive);
 	  position_controller_.dataStoring_active_ = dataStoringActive;
   }
   else
-      RCLCPP_ERROR(pnh_->get_logger(), "Failed to get param 'csvFilesStoring'");
+      RCLCPP_ERROR(lnh_->get_logger(), "Failed to get param 'csvFilesStoring'");
 
-  if (pnh_->get_parameter("EKFActive", EKFActive)){
-    RCLCPP_INFO(pnh_->get_logger(), "Got param 'EKFActive': %d", EKFActive);
+  if (lnh_->get_parameter("EKFActive", EKFActive)){
+    RCLCPP_INFO(lnh_->get_logger(), "Got param 'EKFActive': %d", EKFActive);
     position_controller_.EKF_active_ = EKFActive;
   }
   else
-      RCLCPP_ERROR(pnh_->get_logger(), "Failed to get param 'EKFActive'");
+      RCLCPP_ERROR(lnh_->get_logger(), "Failed to get param 'EKFActive'");
 
-  if (pnh_->get_parameter("csvFilesStoringTime", dataStoringTime)){
-	  RCLCPP_INFO(pnh_->get_logger(), "Got param 'csvFilesStoringTime': %f", dataStoringTime);
+  if (lnh_->get_parameter("csvFilesStoringTime", dataStoringTime)){
+	  RCLCPP_INFO(lnh_->get_logger(), "Got param 'csvFilesStoringTime': %f", dataStoringTime);
 	  position_controller_.dataStoringTime_ = dataStoringTime;
   }
   else
-      RCLCPP_ERROR(pnh_->get_logger(), "Failed to get param 'csvFilesStoringTime'");
+      RCLCPP_ERROR(lnh_->get_logger(), "Failed to get param 'csvFilesStoringTime'");
 
   position_controller_.SetLaunchFileParameters();
 

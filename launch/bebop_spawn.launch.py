@@ -22,11 +22,11 @@ def generate_launch_description():
     csvFilesStoring = LaunchConfiguration('csvFilesStoring', default='false')
     csvFilesStoringTime = LaunchConfiguration('csvFilesStoringTime', default='60.0')
 
-    world = os.path.join(
-        get_package_share_directory('bebop_simulator_r2'),
-        'worlds',
-        'basic.world'
-    )
+    # world = os.path.join(
+    #     get_package_share_directory('bebop_simulator_r2'),
+    #     'worlds',
+    #     'basic.world'
+    # )
 
     pkg_box_car_description = get_package_share_directory('bebop_simulator_r2')
     xacro_file = os.path.join(get_package_share_directory('bebop_simulator_r2'), 'urdf/', 'bebop.urdf.xacro')    
@@ -73,9 +73,11 @@ def generate_launch_description():
         PythonLaunchDescriptionSource(
             os.path.join(pkg_gazebo_ros, 'launch', 'gzserver.launch.py')
         ),
-        launch_arguments={'world': world}.items()
     )
-
+    declare_gazebo_world_cmd = DeclareLaunchArgument(
+          'world',
+          default_value=[os.path.join(pkg_box_car_description, 'worlds', 'basic.world'), ''],
+          description='SDF world file')
     gzclient_cmd = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(pkg_gazebo_ros, 'launch', 'gzclient.launch.py')
@@ -116,13 +118,14 @@ def generate_launch_description():
             parameters=[{'robot_description': robot_desc}
             ],
             output='both')
-    param_launch = {'user_account' :"artem",
+    user_account_l=LaunchConfiguration('user_account', default='artem')
+    param_launch = {'user_account' :user_account,
         'waypoint_filter' :"true",
         'EKFActive' :"false",
         'csvFilesStoring' :"false",
         'csvFilesStoringTime':"60.0"}
-    postion_contrl_cmd =Node(package='bebop_simulator_r2', executable='position_controller_node', arguments=[param_launch], output='screen',
-        parameters=[
+    postion_contrl_cmd =Node(package='bebop_simulator_r2', executable='position_controller_node', arguments=[{'user_account' : user_account_l}], output='screen',
+        parameters=[{'user_account' : user_account_l}
         ])
     
     # Launch configuration variables specific to simulation
@@ -145,16 +148,19 @@ def generate_launch_description():
     ld =LaunchDescription()
     # Declare the launch options
     ld.add_action(declare_time_cmd)
+ 
+    
+    # Add the commands to the launch description
+    # ld.add_action(declare_gazebo_world_cmd)
+    # ld.add_action(gzserver_cmd)
+    # ld.add_action(gzclient_cmd)
+    # ld.add_action(spawn_bebop_cmd)
+    # ld.add_action(robot_state_publisher_cmd)
+
     ld.add_action(declare_user_account_cmd)   
     ld.add_action(declare_waypoint_filter_cmd)
     ld.add_action(declare_EKFActive_cmd)   
     ld.add_action(declare_csvFilesStoring_cmd)
-    ld.add_action(declare_csvFilesStoringTime_cmd)   
-    
-    # Add the commands to the launch description
-    # ld.add_action(gzserver_cmd)
-    ld.add_action(gzclient_cmd)
-    ld.add_action(robot_state_publisher_cmd)
-    ld.add_action(spawn_bebop_cmd)
-    # ld.add_action(postion_contrl_cmd)
+    ld.add_action(declare_csvFilesStoringTime_cmd)  
+    ld.add_action(postion_contrl_cmd)
     return ld
