@@ -40,9 +40,10 @@
 
 namespace bebop_simulator {
 
-    class PositionControllerNode{
+    class PositionControllerNode: public rclcpp::Node
+    {
         public:
-            PositionControllerNode();
+            explicit PositionControllerNode(const rclcpp::NodeOptions &options);
             ~PositionControllerNode();
              
             void InitializeParams();

@@ -89,27 +89,27 @@ def generate_launch_description():
         default_value='false',
         description='Use simulation (Gazebo) clock if true')
     
-    declare_user_account_cmd =DeclareLaunchArgument(
-        'user_account',
-        default_value='artem',
-        description='Use simulation (Gazebo) clock if true')
+    # declare_user_account_cmd =DeclareLaunchArgument(
+    #     'user_account',
+    #     default_value='artem',
+    #     description='Use simulation (Gazebo) clock if true')
         
-    declare_waypoint_filter_cmd =DeclareLaunchArgument(
-        'waypoint_filter',
-        default_value='true',
-        description='Use simulation (Gazebo) clock if true')
-    declare_EKFActive_cmd =DeclareLaunchArgument(
-        'EKFActive',
-        default_value='false',
-        description='Use simulation (Gazebo) clock if true')
-    declare_csvFilesStoring_cmd =DeclareLaunchArgument(
-        'csvFilesStoring',
-        default_value='false',
-        description='Use simulation (Gazebo) clock if true')
-    declare_csvFilesStoringTime_cmd =DeclareLaunchArgument(
-        'csvFilesStoringTime',
-        default_value='60.0',
-        description='Use simulation (Gazebo) clock if true')
+    # declare_waypoint_filter_cmd =DeclareLaunchArgument(
+    #     'waypoint_filter',
+    #     default_value='true',
+    #     description='Use simulation (Gazebo) clock if true')
+    # declare_EKFActive_cmd =DeclareLaunchArgument(
+    #     'EKFActive',
+    #     default_value='false',
+    #     description='Use simulation (Gazebo) clock if true')
+    # declare_csvFilesStoring_cmd =DeclareLaunchArgument(
+    #     'csvFilesStoring',
+    #     default_value='false',
+    #     description='Use simulation (Gazebo) clock if true')
+    # declare_csvFilesStoringTime_cmd =DeclareLaunchArgument(
+    #     'csvFilesStoringTime',
+    #     default_value='61.0',
+    #     description='Use simulation (Gazebo) clock if true')
         
     robot_state_publisher_cmd = Node(
             package="robot_state_publisher",
@@ -119,15 +119,31 @@ def generate_launch_description():
             ],
             output='both')
     user_account_l=LaunchConfiguration('user_account', default='artem')
-    param_launch = {'user_account' :user_account,
-        'waypoint_filter' :"true",
-        'EKFActive' :"false",
-        'csvFilesStoring' :"false",
-        'csvFilesStoringTime':"60.0"}
-    postion_contrl_cmd =Node(package='bebop_simulator_r2', executable='position_controller_node', arguments=[{'user_account' : user_account_l}], output='screen',
-        parameters=[{'user_account' : user_account_l}
-        ])
-    
+    waypoint_filter_l=LaunchConfiguration('waypoint_filter', default='true')
+    EKFActive_l=LaunchConfiguration('EKFActive', default='false')
+    csvFilesStoring_l=LaunchConfiguration('csvFilesStoring', default='false')
+    # user_account_l=LaunchConfiguration('waypoint_filter', default='true')
+    param_launch = {'user_account' :user_account_l,
+        'waypoint_filter' :waypoint_filter_l,
+        'EKFActive' :EKFActive_l,
+        'csvFilesStoring' :csvFilesStoring_l,
+        'csvFilesStoringTime':62}
+
+    postion_contrl_cmd =Node(package='bebop_simulator_r2', executable='position_controller_node', arguments=[], output='screen',
+        parameters=[param_launch],
+        remappings=[
+                ('/command/motor_speed', '/bebop/command/motors'),
+                ('/odometry', '/bebop/odometry'),
+                ('/odometry_gt', '/bebop/odometry_gt'),
+                ('/referenceAngles', '/bebop/referenceAngles'),
+                ('/filteredOutput', '/bebop/filteredOutput'),
+                ('/stateErrors', '/bebop/stateErrors'),
+                ('/smoothedTrajectory', '/bebop/smoothedTrajectory'),
+                ('/command/trajectory', '/bebop/command/trajectory'),
+                # ('', ''),
+            ]
+        )
+    hovering_example_cmd =Node(package='bebop_simulator_r2', executable='hovering_example_node', arguments=[], output='screen')
     # Launch configuration variables specific to simulation
     x_pose = LaunchConfiguration('x_pose', default='0.0')
     y_pose = LaunchConfiguration('y_pose', default='0.0')
@@ -152,15 +168,20 @@ def generate_launch_description():
     
     # Add the commands to the launch description
     # ld.add_action(declare_gazebo_world_cmd)
-    # ld.add_action(gzserver_cmd)
-    # ld.add_action(gzclient_cmd)
-    # ld.add_action(spawn_bebop_cmd)
-    # ld.add_action(robot_state_publisher_cmd)
-
-    ld.add_action(declare_user_account_cmd)   
-    ld.add_action(declare_waypoint_filter_cmd)
-    ld.add_action(declare_EKFActive_cmd)   
-    ld.add_action(declare_csvFilesStoring_cmd)
-    ld.add_action(declare_csvFilesStoringTime_cmd)  
-    ld.add_action(postion_contrl_cmd)
+    ld.add_action(gzserver_cmd)
+    ld.add_action(gzclient_cmd)
+    ld.add_action(spawn_bebop_cmd)
+    ld.add_action(robot_state_publisher_cmd)
+    # ld.add_action(postion_contrl_cmd)
+    # ld.add_action(hovering_example_cmd)   
+    # ld.add_action(declare_waypoint_filter_cmd)
+    # ld.add_action(declare_EKFActive_cmd)   
+    # ld.add_action(declare_csvFilesStoring_cmd)
+    # ld.add_action(declare_csvFilesStoringTime_cmd)  
+    
     return ld
+# [gzserver-1] terminate called after throwing an instance of 'rclcpp::exceptions::RCLError'
+# [gzserver-1]   what():  failed to send response: client will not receive response, at /tmp/binarydeb/ros-foxy-rmw-fastrtps-shared-cpp-1.3.2/src/rmw_response.cpp:127, at /tmp/binarydeb/ros-foxy-rcl-1.1.14/src/rcl/service.c:356
+# [gzserver-1] Aborted (core dumped)
+# [ERROR] [gzserver-1]: process has died [pid 198031, exit code 134, cmd 'gzserver                                                                       
+# -s libgazebo_ros_init.so   -s libgazebo_ros_factory.so   -s libgazebo_ros_force_system.so       '].

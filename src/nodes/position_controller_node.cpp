@@ -28,11 +28,15 @@
 namespace bebop_simulator {
 
 //Constructor
-PositionControllerNode::PositionControllerNode() {
+PositionControllerNode::PositionControllerNode(const rclcpp::NodeOptions &options) :  Node("position_controller",options){
 
-    
-   
-    RCLCPP_INFO_ONCE(lnh_->get_logger(), "Started position controller");
+    declare_parameter("user_account", "artem");
+    declare_parameter("waypoint_filter", true);
+    declare_parameter("EKFActive" ,false);
+    declare_parameter("csvFilesStoring" ,false);
+    declare_parameter("csvFilesStoringTime",int64_t(60.0));
+
+    RCLCPP_INFO_ONCE(get_logger(), "Started position controller");
     //The vehicle and controller parameters are initialized
     InitializeParams();
     //To get the trajectory to follow
@@ -248,40 +252,40 @@ void PositionControllerNode::InitializeParams() {
   int64_t dataStoringTime;
   std::string user;
   // pnh
-  if (lnh_->get_parameter("user_account", user)){
-	  RCLCPP_INFO(lnh_->get_logger(), "Got param 'user_account': %s", user.c_str());
+  if (get_parameter("user_account", user)){
+	  RCLCPP_INFO(get_logger(), "Got param 'user_account': %s", user.c_str());
 	  position_controller_.user_ = user;
   }
   else
-      RCLCPP_ERROR(lnh_->get_logger(), "Failed to get param 'user'");
+      RCLCPP_ERROR(get_logger(), "Failed to get param 'user'");
 
-  if (lnh_->get_parameter("waypoint_filter", waypointFilterActive)){
-    RCLCPP_INFO(lnh_->get_logger(), "Got param 'waypoint_filter': %d", waypointFilterActive);
+  if (get_parameter("waypoint_filter", waypointFilterActive)){
+    RCLCPP_INFO(get_logger(), "Got param 'waypoint_filter': %d", waypointFilterActive);
     position_controller_.waypointFilter_active_ = waypointFilterActive;
   }
   else
-      RCLCPP_ERROR(lnh_->get_logger(), "Failed to get param 'waypoint_filter'");
+      RCLCPP_ERROR(get_logger(), "Failed to get param 'waypoint_filter'");
 
-  if (lnh_->get_parameter("csvFilesStoring", dataStoringActive)){
-	  RCLCPP_INFO(lnh_->get_logger(), "Got param 'csvFilesStoring': %d", dataStoringActive);
+  if (get_parameter("csvFilesStoring", dataStoringActive)){
+	  RCLCPP_INFO(get_logger(), "Got param 'csvFilesStoring': %d", dataStoringActive);
 	  position_controller_.dataStoring_active_ = dataStoringActive;
   }
   else
-      RCLCPP_ERROR(lnh_->get_logger(), "Failed to get param 'csvFilesStoring'");
+      RCLCPP_ERROR(get_logger(), "Failed to get param 'csvFilesStoring'");
 
-  if (lnh_->get_parameter("EKFActive", EKFActive)){
-    RCLCPP_INFO(lnh_->get_logger(), "Got param 'EKFActive': %d", EKFActive);
+  if (get_parameter("EKFActive", EKFActive)){
+    RCLCPP_INFO(get_logger(), "Got param 'EKFActive': %d", EKFActive);
     position_controller_.EKF_active_ = EKFActive;
   }
   else
-      RCLCPP_ERROR(lnh_->get_logger(), "Failed to get param 'EKFActive'");
+      RCLCPP_ERROR(get_logger(), "Failed to get param 'EKFActive'");
 
-  if (lnh_->get_parameter("csvFilesStoringTime", dataStoringTime)){
-	  RCLCPP_INFO(lnh_->get_logger(), "Got param 'csvFilesStoringTime': %f", dataStoringTime);
+  if (get_parameter("csvFilesStoringTime", dataStoringTime)){
+	  RCLCPP_INFO(get_logger(), "Got param 'csvFilesStoringTime': %d", dataStoringTime);
 	  position_controller_.dataStoringTime_ = dataStoringTime;
   }
   else
-      RCLCPP_ERROR(lnh_->get_logger(), "Failed to get param 'csvFilesStoringTime'");
+      RCLCPP_ERROR(get_logger(), "Failed to get param 'csvFilesStoringTime'");
 
   position_controller_.SetLaunchFileParameters();
 
@@ -403,10 +407,11 @@ void PositionControllerNode::OdometryCallback(const nav_msgs::msg::Odometry::Sha
 
 int main(int argc, char** argv){
     rclcpp::init(argc, argv);
-    auto nh2 = rclcpp::Node::make_shared("position_controller_node");
-    bebop_simulator::PositionControllerNode position_controller_node;
+    rclcpp::NodeOptions options;
+    // auto nh2 = rclcpp::Node::make_shared("position_controller_node");
+    auto node = std::make_shared<bebop_simulator::PositionControllerNode>(options);
 
-    rclcpp::spin(nh2);
+    rclcpp::spin(node);
 
     return 0;
 }

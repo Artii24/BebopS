@@ -16,6 +16,7 @@ find_package(nav_msgs REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(trajectory_msgs REQUIRED)
+find_package(std_srvs REQUIRED)
 
 find_package(
   Eigen3 REQUIRED HINTS ${Eigen3_HINT}
@@ -134,6 +135,23 @@ ament_target_dependencies(position_controller_node
 target_link_libraries(position_controller_node 
   ${PROJECT_NAME}_lib 
 )
+
+add_executable(hovering_example_node 
+  src/nodes/hovering_example.cpp
+)
+ament_target_dependencies(hovering_example_node
+    "rclcpp"
+    "std_srvs"
+    "geometry_msgs"
+    "gazebo_msgs"
+    "mav_msgs"
+    "nav_msgs"
+    "std_msgs"
+    "sensor_msgs"
+    "trajectory_msgs"
+)
+install(TARGETS hovering_example_node
+DESTINATION lib/${PROJECT_NAME}/)
 # This adds all files in the folder ${CMAKE_CURRENT_SOURCE_DIR}/include to the public interface during build time and all files
 #  in the include folder (relative to ${CMAKE_INSTALL_DIR}) when being installed.
 target_include_directories(position_controller_node PUBLIC
